@@ -1,88 +1,85 @@
 package io.omengye.ws.controller;
 
-import java.nio.charset.Charset;
-import java.time.Duration;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import org.asynchttpclient.AsyncCompletionHandler;
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.DefaultAsyncHttpClient;
+import org.asynchttpclient.DefaultAsyncHttpClientConfig;
+import org.asynchttpclient.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.reactive.ClientHttpRequest;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.BodyInserter;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+
+import io.omengye.ws.service.HttpClientService;
+
 
 @RestController
 public class IndexController {
+	
+	@Autowired
+	private HttpClientService httpClientService;
+	
 	@GetMapping("/")
 	public String welcome() {
-		return "Hello World";
+		return "H";
 	}
 	
-	@GetMapping("/json")
-	public Map<String, String> json(@RequestParam(value="id",required=false)String id) {
+	@RequestMapping("/jsonparam")
+	public Map<String, String> getJsonFromRequestParam(@RequestParam(value="type", required=false)String type) {
 		Map<String, String> map = new HashMap<>();
-		if (id == null) {
-			map.put("name", "val");
+		if (type == null) {
+			map.put("type", "val");
 		}
 		else {
-			map.put("name", id);
+			map.put("type", type);
 		}
 		return map;
 	}
 	
-	@GetMapping("/async")
-	public Mono<String> async() {
-		return Mono.just("hello").delaySubscription(Duration.ofSeconds(20));
+	@GetMapping(value="/jsonbody", produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public Map<String, String> getJsonFromRequestBody(@RequestBody(required=false)Map<String, String> reqmap) {
+		Map<String, String> map = new HashMap<>();
+		if (reqmap == null || !reqmap.containsKey("type") || reqmap.get("type") == null) {
+			map.put("type", "val");
+		}
+		else {
+			map.put("type", reqmap.get("type"));
+		}
+		return map;
 	}
 	
-	@GetMapping("/resp")
-	public Flux<Map> getResponse() {
-		WebClient client = WebClient.create("https://www.googleapis.com");
-		WebClient.RequestBodySpec uri = client.method(HttpMethod.POST).uri("/customsearch/v1");
-		
-		LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("q", "test");
-        
-		BodyInserter<MultiValueMap<String, ?>, ClientHttpRequest> inserter = BodyInserters.fromMultipartData(map);
-		WebClient.ResponseSpec response = uri.body(inserter)
-			.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-	        .accept(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML)
-	        .acceptCharset(Charset.forName("UTF-8"))
-	        .ifNoneMatch("*")
-	        .ifModifiedSince(ZonedDateTime.now())
-	        .retrieve();
-		
-		return response.bodyToFlux(Map.class);
-	}
-	
-	@GetMapping("/res/{q}")
-	public Flux<Map> response(@PathVariable String q) {
-		WebClient client = WebClient.create("https://www.googleapis.com");
-		WebClient.RequestBodySpec uri = client.method(HttpMethod.GET)
-				.uri("/customsearch/v1").accept(MediaType.APPLICATION_JSON);
-        
-		WebClient.ResponseSpec response = uri
-			.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-			.header("q", q)
-	        .accept(MediaType.APPLICATION_JSON)
-	        .acceptCharset(Charset.forName("UTF-8"))
-	        .ifNoneMatch("*")
-	        .ifModifiedSince(ZonedDateTime.now())
-	        .retrieve();
-		
-		return response.bodyToFlux(Map.class);
-	}
+    
+    
+    @GetMapping(value="/test")
+    public void ssltest() throws Exception {
+    	DefaultAsyncHttpClientConfig config = new DefaultAsyncHttpClientConfig.Builder().setAcceptAnyCertificate(true).build();
+    	AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient(config);
+    	try {
+    		final List<Response> responses = new CopyOnWriteArrayList<>();
+            final CountDownLatch latch = new CountDownLatch(1);
+            String url = "https://localhost:8090/jsonbody";
+            httpClientService.sslCallBack(asyncHttpClient, url, responses, latch);
+    		latch.await();
+    		if (!responses.isEmpty()) {
+				for (final Response response : responses) {
+					System.out.println(response.getResponseBody());
+				}
+			}
+    	}
+    	finally {
+    		asyncHttpClient.close();
+    	}
+    }
+    
+    
+    
 	
 }

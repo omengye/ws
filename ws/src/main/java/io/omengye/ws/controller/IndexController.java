@@ -1,5 +1,6 @@
 package io.omengye.ws.controller;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,12 @@ import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.asynchttpclient.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,10 +62,18 @@ public class IndexController {
 		return map;
 	}
 	
+//	@GetMapping("login")
+//	public String loginGetMethod() {
+//		return "please login first";
+//	}
+//	
+//	@PostMapping("login")
+//	public String 
     
     
-    @GetMapping(value="/test")
-    public void ssltest() throws Exception {
+    @GetMapping(value="/test/{id}")
+    @PreAuthorize("#oauth2.hasScope('select')")
+    public void ssltest(@PathVariable String id)  throws Exception {
     	DefaultAsyncHttpClientConfig config = new DefaultAsyncHttpClientConfig.Builder().setAcceptAnyCertificate(true).build();
     	AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient(config);
     	try {

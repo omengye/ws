@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +36,7 @@ public class IndexController {
 	
 	@GetMapping("/")
 	public String welcome() {
-		return "H";
+		return "Hello";
 	}
 	
 	@RequestMapping("/jsonparam")
@@ -62,26 +63,47 @@ public class IndexController {
 		return map;
 	}
 	
-    @GetMapping(value="/test")
+	@CrossOrigin
+    @GetMapping(value="/g")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public void ssltest(Principal principal)  throws Exception {
+    public String ssltest(Principal principal, 
+    		@RequestParam(value="q",required=false)String q,
+    		@RequestParam(value="start",required=false)String start,
+    		@RequestParam(value="num",required=false)String num)  throws Exception {
+		String result = "{}";
+		if (q==null || q.equals("")) {
+			return result;
+		}
     	DefaultAsyncHttpClientConfig config = new DefaultAsyncHttpClientConfig.Builder().setAcceptAnyCertificate(true).build();
     	AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient(config);
     	try {
     		final List<Response> responses = new CopyOnWriteArrayList<>();
             final CountDownLatch latch = new CountDownLatch(1);
-            String url = "https://localhost:8090/jsonbody";
+            
+            String key = "";
+    		String cx= "";
+    		
+            if (start==null || start.equals("")) {
+            	start="1";
+            }
+            if (num==null || num.equals("")) {
+            	num="10";
+            }
+
+            String url = "https://www.googleapis.com/customsearch/v1?key="
+        			+key+"&cx="+cx+"&q="+q+"&start="+start+"&num="+num;
             httpClientService.sslCallBack(asyncHttpClient, url, responses, latch);
     		latch.await();
     		if (!responses.isEmpty()) {
 				for (final Response response : responses) {
-					System.out.println(response.getResponseBody());
+					result=response.getResponseBody();
 				}
 			}
     	}
     	finally {
     		asyncHttpClient.close();
     	}
+    	return result;
     }
     
     

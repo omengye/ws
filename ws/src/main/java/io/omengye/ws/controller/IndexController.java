@@ -62,18 +62,9 @@ public class IndexController {
 		return map;
 	}
 	
-//	@GetMapping("login")
-//	public String loginGetMethod() {
-//		return "please login first";
-//	}
-//	
-//	@PostMapping("login")
-//	public String 
-    
-    
-    @GetMapping(value="/test/{id}")
-    @PreAuthorize("#oauth2.hasScope('select')")
-    public void ssltest(@PathVariable String id)  throws Exception {
+    @GetMapping(value="/test")
+    @PreAuthorize("#oauth2.hasScope('read')")
+    public void ssltest(Principal principal)  throws Exception {
     	DefaultAsyncHttpClientConfig config = new DefaultAsyncHttpClientConfig.Builder().setAcceptAnyCertificate(true).build();
     	AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient(config);
     	try {

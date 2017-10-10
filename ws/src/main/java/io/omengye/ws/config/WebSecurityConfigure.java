@@ -20,23 +20,39 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
-@EnableWebSecurity
 public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
 
-	@Bean
 	@Override
-	protected UserDetailsService userDetailsService() {
-		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-		manager.createUser(User.withUsername("user_1").password("123456").authorities("USER").build());
-		return manager;
-	}
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+                .withUser("username")
+                .password("password")
+                .roles("USERS");
+    }
+
+    // 将 AuthenticationManager 注册为 bean , 方便配置 oauth server 的时候使用
+    @Bean
+    @Override
+    protected AuthenticationManager authenticationManager() throws Exception {
+        return super.authenticationManager();
+    }
+
+    // 将 UserDetailService 注册为 bean , 方便配置 oauth server 的时候使用
+    @Bean
+    @Override
+    protected UserDetailsService userDetailsService() {
+        return super.userDetailsService();
+    }
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-		.antMatchers("/oauth/*").permitAll()
-		.anyRequest().authenticated()
-		.and().csrf().disable();
+		http
+        .csrf().disable() // oauth server 不需要 csrf 防护
+        .authorizeRequests()
+        //.antMatchers("/public/**").permitAll() // public 路径不需要认证即可访问
+        .anyRequest().authenticated() //其他页面都需要登录后访问
+        .and()
+        .httpBasic().disable(); // 禁止 basic 认证
 	}
 
 }

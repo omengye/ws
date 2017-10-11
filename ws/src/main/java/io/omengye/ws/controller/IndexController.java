@@ -1,11 +1,17 @@
 package io.omengye.ws.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
@@ -24,8 +30,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import io.omengye.ws.service.FileService;
 import io.omengye.ws.service.HttpClientService;
+import io.omengye.ws.utils.FileUtil;
 
 
 @RestController
@@ -34,12 +44,15 @@ public class IndexController {
 	@Autowired
 	private HttpClientService httpClientService;
 	
+	@Autowired
+	private FileService fileService;
+	
 	@GetMapping("/")
 	public String welcome() {
 		return "Hello";
 	}
 	
-	@RequestMapping("/jsonparam")
+	@RequestMapping("/json")
 	public Map<String, String> getJsonFromRequestParam(@RequestParam(value="type", required=false)String type) {
 		Map<String, String> map = new HashMap<>();
 		if (type == null) {
@@ -63,7 +76,6 @@ public class IndexController {
 		return map;
 	}
 	
-	@CrossOrigin
     @GetMapping(value="/g")
     @PreAuthorize("#oauth2.hasScope('read')")
     public String ssltest(Principal principal, 
@@ -106,7 +118,34 @@ public class IndexController {
     	return result;
     }
     
-    
+	@RequestMapping("/upload")
+	public String postMessage(HttpServletResponse response,
+			MultipartHttpServletRequest fileRequest, Principal principal)
+			throws IOException {
+
+		//上传路径
+		String path = "d:/var/www/html/";
+		// 创建文件保存路径
+		FileUtil.createFolder(path);
+		
+		Iterator<String> iterator = fileRequest.getFileNames();
+
+		while (iterator.hasNext()) {
+			String iter = iterator.next();
+			MultipartFile multipartFile = fileRequest.getFile(iter);
+			if (multipartFile.getSize() > 0) {
+				InputStream in = multipartFile.getInputStream();
+				// springmvc上传默认编码为iso
+				String fileName = new String(multipartFile.getOriginalFilename().getBytes("ISO8859-1"),"UTF-8");
+				try {
+					fileService.saveFile(in, path+fileName);
+				} catch (Exception e) {
+					return fileName + " 上传失败";
+				}
+			}
+		}
+		return "上传成功";
+	}
     
 	
 }

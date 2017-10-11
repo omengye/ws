@@ -1,7 +1,10 @@
 package io.omengye.ws.controller;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,8 +13,10 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
@@ -46,6 +51,9 @@ public class IndexController {
 	
 	@Autowired
 	private FileService fileService;
+	
+	//上传路径
+	private String path = "d:/var/www/html/";
 	
 	@GetMapping("/")
 	public String welcome() {
@@ -118,13 +126,25 @@ public class IndexController {
     	return result;
     }
     
-	@RequestMapping("/upload")
+    /**
+     * using
+     * 
+     * curl --progress-bar -k -i -X POST -H "Content-Type: multipart/related;charset=UTF-8" -F \
+     * 	data=@"file.txt" "https://domain/upload?access_token=token"
+     * 
+     * to upload file
+     * @param response
+     * @param fileRequest
+     * @param principal
+     * @return
+     * @throws IOException
+     */
+	@PostMapping("/upload")
 	public String postMessage(HttpServletResponse response,
 			MultipartHttpServletRequest fileRequest, Principal principal)
 			throws IOException {
 
-		//上传路径
-		String path = "d:/var/www/html/";
+
 		// 创建文件保存路径
 		FileUtil.createFolder(path);
 		
@@ -135,8 +155,8 @@ public class IndexController {
 			MultipartFile multipartFile = fileRequest.getFile(iter);
 			if (multipartFile.getSize() > 0) {
 				InputStream in = multipartFile.getInputStream();
-				// springmvc上传默认编码为iso
 				String fileName = new String(multipartFile.getOriginalFilename().getBytes("ISO8859-1"),"UTF-8");
+				System.out.println(fileName);
 				try {
 					fileService.saveFile(in, path+fileName);
 				} catch (Exception e) {
@@ -147,5 +167,42 @@ public class IndexController {
 		return "上传成功";
 	}
     
+	/**
+	 * using
+	 * 
+	 * curl -k -o ~/rename.txt https://domain/download/filename?access_token=token
+	 * 
+	 * to download file 
+	 * 
+	 * @param filename
+	 * @param response
+	 * @param request
+	 * @param principal
+	 */
+	@RequestMapping("/download/{file}")
+	public void download(@PathVariable("file")String filename, HttpServletResponse response,
+			HttpServletRequest request, Principal principal) {
+		
+	    OutputStream os = null;
+		try {
+			response.setContentType("application/octet-stream"); 
+		    String name = URLEncoder.encode(filename, "UTF-8");  
+		    response.setHeader("Content-disposition", "attachment;filename="  + name);  
+		    os = response.getOutputStream();  
+	        IOUtils.copy(new FileInputStream(path+name), os);  
+	        os.flush();  
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+	        try {
+	        	if (os !=null) {
+	        		os.close();
+	        	}
+			} catch (IOException e) {
+				System.out.println("关闭response流错误");
+			}  
+		}
+	}
 	
 }

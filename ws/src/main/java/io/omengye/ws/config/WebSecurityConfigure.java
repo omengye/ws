@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
@@ -48,11 +49,16 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http
         .csrf().disable() // oauth server 不需要 csrf 防护
+        .httpBasic().disable() // 禁止 basic 认证
         .authorizeRequests()
-        //.antMatchers("/public/**").permitAll() // public 路径不需要认证即可访问
-        .anyRequest().authenticated() //其他页面都需要登录后访问
-        .and()
-        .httpBasic().disable(); // 禁止 basic 认证
+        .anyRequest().authenticated() //页面需要登录后访问
+        ;
 	}
+	
+	@Override
+    public void configure(WebSecurity web) throws Exception {
+		// 不需要认证的路径
+        web.ignoring().antMatchers("/");
+    }
 
 }

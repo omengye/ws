@@ -23,12 +23,15 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 @Configuration
 public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
 
+	@Autowired
+	private CustomAuthProvider customAuthProvider;
+	
 	@Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("username")
-                .password("password")
-                .roles("USERS");
+    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+//		auth.inMemoryAuthentication().withUser("username")
+//        .password("password")
+//        .roles("USERS");
+        auth.authenticationProvider(customAuthProvider);
     }
 
     // 将 AuthenticationManager 注册为 bean , 方便配置 oauth server 的时候使用

@@ -53,7 +53,7 @@ public class IndexController {
 	private FileService fileService;
 	
 	//上传路径
-	private String path = "d:/var/www/html/";
+	private String path = "/var/www/html/";
 	
 	@GetMapping("/")
 	public String welcome() {

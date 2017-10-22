@@ -32,11 +32,11 @@ public class CustomAuthProvider implements AuthenticationProvider {
 		UserEntity user = null;
 		try {
 			if (StrUtil.snull(username) != null) {
-				user = userService.getUser(username);
+				user = userService.getUserByName(username);
 			}
 		} catch (Exception e) {
-//			System.out.println("查询用户错误");
-//			e.printStackTrace();
+			System.out.println("查询用户错误");
+			e.printStackTrace();
 		}
 
 		if (user == null) {

@@ -1,5 +1,6 @@
 package io.omengye.ws.service;
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -10,6 +11,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
+import io.omengye.ws.common.base.Constants;
 import io.omengye.ws.entity.UserEntity;
 import io.omengye.ws.utils.StrUtil;
 
@@ -18,42 +20,60 @@ public class UserService {
 	
 	private final static String userNotFound = "USER_NOT_FOUND";
 	
-	private static ConcurrentHashMap<String, UserEntity> userLocal = new ConcurrentHashMap<>();
-	
-	private static LoadingCache<String, UserEntity> userCache = CacheBuilder.newBuilder()
-			.expireAfterWrite(1, TimeUnit.MINUTES).build(new CacheLoader<String, UserEntity>() {
+	private static LoadingCache<String, UserEntity> userIpCache = CacheBuilder.newBuilder()
+			.expireAfterWrite(Constants.expireLoginTime, TimeUnit.SECONDS).build(new CacheLoader<String, UserEntity>() {
 				@Override
-				public UserEntity load(String username) throws Exception {
+				public UserEntity load(String userip) throws Exception {
 					throw new Exception(userNotFound);
 				}
 			});
 	
-	static {
-		// 创建可认证用户
-		userLocal.put("username", new UserEntity("username", "password"));
-	}
+	private static LoadingCache<String, UserEntity> userNameCache = CacheBuilder.newBuilder()
+			.expireAfterWrite(Constants.expireLoginTime, TimeUnit.SECONDS).build(new CacheLoader<String, UserEntity>() {
+				@Override
+				public UserEntity load(String userip) throws Exception {
+					throw new Exception(userNotFound);
+				}
+			});
 	
-	public void addUser(String username) {
-		if (StrUtil.snull(username)==null) {
+	public void addUser(String userip) {
+		if (StrUtil.snull(userip)==null) {
 			return;
 		}
+		//
+		String username = UUID.randomUUID().toString();
 		String password = StrUtil.base64Encode(username);
-		userCache.put(username, new UserEntity(username, password));
+		userIpCache.put(userip, new UserEntity(userip, username, password));
+		userNameCache.put(username, new UserEntity(userip, username, password));
 	}
 	
-	public UserEntity getUser(String username) throws Exception {
+	public UserEntity getUserByIp(String userip) throws Exception {
 		UserEntity entity = null;
 		try {
-			entity = userCache.get(username);
+			entity = userIpCache.get(userip);
 		}
 		catch(Exception ex) {
 			if (StrUtil.snull(ex.getCause().getMessage())!=null 
 					&& ex.getCause().getMessage().equals(userNotFound)) {
-				return userLocal.get(username);
+				return entity;
 			}
 			throw ex;
 		}
-		
+		return entity;
+	}
+	
+	public UserEntity getUserByName(String username) throws Exception {
+		UserEntity entity = null;
+		try {
+			entity = userNameCache.get(username);
+		}
+		catch(Exception ex) {
+			if (StrUtil.snull(ex.getCause().getMessage())!=null 
+					&& ex.getCause().getMessage().equals(userNotFound)) {
+				return entity;
+			}
+			throw ex;
+		}
 		return entity;
 	}
 	

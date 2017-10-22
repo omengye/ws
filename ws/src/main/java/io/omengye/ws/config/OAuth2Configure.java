@@ -13,11 +13,14 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+
+import io.omengye.ws.common.base.Constants;
 
 @Configuration
 @EnableAuthorizationServer // 必须
@@ -46,8 +49,8 @@ public class OAuth2Configure extends AuthorizationServerConfigurerAdapter {
                 .authorizedGrantTypes("password", "refresh_token")
                 .scopes("read")
                 .autoApprove("read")
-                .refreshTokenValiditySeconds(8*3600)
-                .accessTokenValiditySeconds(3600);
+                .refreshTokenValiditySeconds(Constants.expireRefreshTokenTime)
+                .accessTokenValiditySeconds(Constants.expireTokenTime);
 
     }
 
@@ -55,6 +58,7 @@ public class OAuth2Configure extends AuthorizationServerConfigurerAdapter {
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints
                 .tokenStore(tokenStore())
+                .tokenEnhancer(tokenEnhancer())
                 .authenticationManager(authenticationManager)
                 .userDetailsService(userDetailsService)
                 .reuseRefreshTokens(false); // 禁止重复使用refresh token
@@ -63,6 +67,11 @@ public class OAuth2Configure extends AuthorizationServerConfigurerAdapter {
     @Bean
     public TokenStore tokenStore(){
         return new InMemoryTokenStore(); //使用内存中的 token store
+    }
+    
+    @Bean
+    public TokenEnhancer tokenEnhancer() {
+        return new CustomTokenEnhancer();
     }
     
     // 设置跨域访问

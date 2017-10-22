@@ -6,15 +6,26 @@ import java.util.List;
 
 public class UserEntity implements Serializable{
 
+	private String userip;
+	
 	private String username;
 	
 	private String password;
 	
 	public UserEntity() {};
 	
-	public UserEntity(String username, String password) {
+	public UserEntity(String userip, String username, String password) {
+		this.userip = userip;
 		this.username = username;
 		this.password = password;
+	}
+
+	public String getUserip() {
+		return userip;
+	}
+
+	public void setUserip(String userip) {
+		this.userip = userip;
 	}
 
 	public String getUsername() {

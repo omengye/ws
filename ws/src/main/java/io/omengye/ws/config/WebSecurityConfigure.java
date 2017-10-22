@@ -61,7 +61,11 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
 	@Override
     public void configure(WebSecurity web) throws Exception {
 		// 不需要认证的路径
-        web.ignoring().antMatchers("/");
+        web.ignoring().antMatchers("/")
+        .and()
+        .ignoring().antMatchers("/getUserid")
+        .and()
+        .ignoring().antMatchers("/getToken");
     }
 
 }

@@ -1,5 +1,8 @@
 package io.omengye.ws.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,15 +48,18 @@ public class UserController {
 	}
 	
 	@PostMapping("/getToken")
-	public String getToken(HttpServletRequest request) {
-		String token = null;
+	public Map<String,Object> getToken(HttpServletRequest request) {
+		Map<String,Object> token = new HashMap<String, Object>();
+		token.put("success", false);
 		String userip = request.getParameter("userip");
 		if (StrUtil.snull(userip)==null) {
 			return null;
 		} 
 		try {
 			if (tokenService.getToken(userip)!=null) {
-				token = tokenService.getToken(userip);
+				String tokenData = tokenService.getToken(userip);
+				token.put("success", true);
+				token.put("data", tokenData);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

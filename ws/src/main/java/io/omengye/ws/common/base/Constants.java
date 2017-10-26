@@ -8,4 +8,10 @@ public class Constants {
 	
 	public static int expireLoginTime = 60;
 
+	// super user
+	public static String superuserip = "ip";
+	public static String superusername = "username";
+	public static String superuserpwd = "password";
+	public static String superrole = "Role_Admin";
+	
 }

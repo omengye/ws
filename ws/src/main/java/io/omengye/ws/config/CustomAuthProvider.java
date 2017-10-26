@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import io.omengye.ws.common.base.Constants;
 import io.omengye.ws.entity.UserEntity;
 import io.omengye.ws.service.UserService;
 import io.omengye.ws.utils.StrUtil;
@@ -31,7 +32,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 		UserEntity user = null;
 		try {
-			if (StrUtil.snull(username) != null) {
+			if (StrUtil.snull(username) != null && StrUtil.snull(password)!=null) {
 				user = userService.getUserByName(username);
 			}
 		} catch (Exception e) {
@@ -39,15 +40,20 @@ public class CustomAuthProvider implements AuthenticationProvider {
 			e.printStackTrace();
 		}
 
-		if (user == null) {
+		List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+		if (user == null && userService.getSuperUser(username)==null) {
 			// 用户名错误
 			throw new UsernameNotFoundException("用户不存在");
 		}
-
-		List<String> roles = user.getRoles();
-		List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
-		for (String role : roles) {
-			authorities.add(new SimpleGrantedAuthority(role));
+		else if (user != null) {
+			List<String> roles = user.getRoles();
+			for (String role : roles) {
+				authorities.add(new SimpleGrantedAuthority(role));
+			}
+		}
+		else {
+			user = userService.getSuperUser(username);
+			authorities.add(new SimpleGrantedAuthority(Constants.superrole));
 		}
 
 		if (!password.equals(user.getPassword())) {

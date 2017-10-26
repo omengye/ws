@@ -87,6 +87,12 @@
 		  <artifactId>guava</artifactId>
 		  <version>23.2-jre</version>
 		</dependency>
+		
+		<dependency>
+		    <groupId>com.jsoniter</groupId>
+		    <artifactId>jsoniter</artifactId>
+		    <version>0.9.16</version>
+		</dependency>
 	</dependencies>
 
 	<build>

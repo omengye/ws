@@ -36,6 +36,20 @@ public class UserService {
 				}
 			});
 	
+	// superuser username:info map
+	private static ConcurrentHashMap<String, UserEntity> superUser = new ConcurrentHashMap<>();
+	
+	static {
+		superUser.put(Constants.superusername, new UserEntity(Constants.superuserip, Constants.superusername, Constants.superuserpwd));
+	}
+	
+	public UserEntity getSuperUser(String username) {
+		if (!superUser.containsKey(username)) {
+			return null;
+		}
+		return superUser.get(username);
+	}
+	
 	public void addUser(String userip) {
 		if (StrUtil.snull(userip)==null) {
 			return;

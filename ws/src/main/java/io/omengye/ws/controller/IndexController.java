@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import io.omengye.ws.common.base.Constants;
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
@@ -38,8 +39,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.jsoniter.JsonIterator;
+import com.jsoniter.output.JsonStream;
+
 import io.omengye.ws.service.FileService;
 import io.omengye.ws.service.HttpClientService;
+import io.omengye.ws.service.SearchService;
 import io.omengye.ws.utils.FileUtil;
 
 
@@ -51,6 +56,9 @@ public class IndexController {
 	
 	@Autowired
 	private FileService fileService;
+	
+	@Autowired
+	private SearchService searchService;
 	
 	//上传路径
 	private String path = "/var/www/html/";
@@ -116,7 +124,9 @@ public class IndexController {
     		latch.await();
     		if (!responses.isEmpty()) {
 				for (final Response response : responses) {
-					result=response.getResponseBody();
+					String str = response.getResponseBody();
+					HashMap<String, Object> map = searchService.parse(str);
+					result = JsonStream.serialize(map);
 				}
 			}
     	}
@@ -139,6 +149,7 @@ public class IndexController {
      * @return
      * @throws IOException
      */
+    @PreAuthorize("hasRole(T(io.omengye.ws.common.base.Constants).superrole)")
 	@PostMapping("/upload")
 	public String postMessage(HttpServletResponse response,
 			MultipartHttpServletRequest fileRequest, Principal principal)
@@ -179,6 +190,7 @@ public class IndexController {
 	 * @param request
 	 * @param principal
 	 */
+    @PreAuthorize("hasRole(T(io.omengye.ws.common.base.Constants).superrole)")
 	@RequestMapping("/download/{file}")
 	public void download(@PathVariable("file")String filename, HttpServletResponse response,
 			HttpServletRequest request, Principal principal) {

@@ -11,7 +11,8 @@ import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecur
 public class MethodSecurityConfigure  extends GlobalMethodSecurityConfiguration {
     @Override
     protected MethodSecurityExpressionHandler createExpressionHandler() {
-        return new OAuth2MethodSecurityExpressionHandler();
+        final OAuth2MethodSecurityExpressionHandler handler = new OAuth2MethodSecurityExpressionHandler();
+        return handler;
     }
 
 }

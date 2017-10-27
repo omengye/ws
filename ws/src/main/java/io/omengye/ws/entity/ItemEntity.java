@@ -8,7 +8,9 @@ public class ItemEntity {
 	private String snippet;
 	private String htmlFormattedUrl;
 	private String htmlTitle;
-	private String kind;
+	private String displayLink;
+    private String link;
+    private String htmlSnippet;
 	private String title;
 	private String formattedUrl;
 	
@@ -18,7 +20,9 @@ public class ItemEntity {
 		this.snippet = StrUtil.getStr(map.get("snippet"));
 		this.htmlFormattedUrl = StrUtil.getStr(map.get("htmlFormattedUrl"));
 		this.htmlTitle = StrUtil.getStr(map.get("htmlTitle"));
-		this.kind = StrUtil.getStr(map.get("kind"));
+		this.displayLink = StrUtil.getStr(map.get("displayLink"));
+		this.link = StrUtil.getStr(map.get("link"));
+		this.htmlSnippet = StrUtil.getStr(map.get("htmlSnippet"));
 		this.title = StrUtil.getStr(map.get("title"));
 		this.formattedUrl = StrUtil.getStr(map.get("formattedUrl"));
 	}
@@ -41,11 +45,23 @@ public class ItemEntity {
 	public void setHtmlTitle(String htmlTitle) {
 		this.htmlTitle = htmlTitle;
 	}
-	public String getKind() {
-		return kind;
+	public String getDisplayLink() {
+		return displayLink;
 	}
-	public void setKind(String kind) {
-		this.kind = kind;
+	public void setDisplayLink(String displayLink) {
+		this.displayLink = displayLink;
+	}
+	public String getLink() {
+		return link;
+	}
+	public void setLink(String link) {
+		this.link = link;
+	}
+	public String getHtmlSnippet() {
+		return htmlSnippet;
+	}
+	public void setHtmlSnippet(String htmlSnippet) {
+		this.htmlSnippet = htmlSnippet;
 	}
 	public String getTitle() {
 		return title;
@@ -59,7 +75,5 @@ public class ItemEntity {
 	public void setFormattedUrl(String formattedUrl) {
 		this.formattedUrl = formattedUrl;
 	}
-	
-
 	
 }

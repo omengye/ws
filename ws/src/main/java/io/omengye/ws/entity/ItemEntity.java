@@ -1,5 +1,9 @@
 package io.omengye.ws.entity;
 
+import java.util.HashMap;
+
+import io.omengye.ws.utils.StrUtil;
+
 public class ItemEntity {
 	private String snippet;
 	private String htmlFormattedUrl;
@@ -7,6 +11,17 @@ public class ItemEntity {
 	private String kind;
 	private String title;
 	private String formattedUrl;
+	
+	public ItemEntity() {}
+	
+	public ItemEntity(HashMap<String, Object> map) {
+		this.snippet = StrUtil.getStr(map.get("snippet"));
+		this.htmlFormattedUrl = StrUtil.getStr(map.get("htmlFormattedUrl"));
+		this.htmlTitle = StrUtil.getStr(map.get("htmlTitle"));
+		this.kind = StrUtil.getStr(map.get("kind"));
+		this.title = StrUtil.getStr(map.get("title"));
+		this.formattedUrl = StrUtil.getStr(map.get("formattedUrl"));
+	}
 	
 	public String getSnippet() {
 		return snippet;
@@ -44,5 +59,7 @@ public class ItemEntity {
 	public void setFormattedUrl(String formattedUrl) {
 		this.formattedUrl = formattedUrl;
 	}
+	
+
 	
 }

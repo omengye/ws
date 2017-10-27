@@ -17,6 +17,6 @@ public class Constants {
 	public static String superuserip = "ip";
 	public static String superusername = "username";
 	public static String superuserpwd = "password";
-
+	public static String superrole = rolePrefix+roleAdmin;
 	
 }

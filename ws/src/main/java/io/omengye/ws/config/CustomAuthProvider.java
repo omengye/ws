@@ -54,7 +54,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
 		else {
 			// super user
 			user = userService.getSuperUser(username);
-			authorities.add(new SimpleGrantedAuthority(Constants.rolePrefix + Constants.roleAdmin));
+			authorities.add(new SimpleGrantedAuthority(Constants.superrole));
 		}
 
 		if (!password.equals(user.getPassword())) {

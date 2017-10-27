@@ -12,6 +12,14 @@ public class StrUtil {
 		}
 	}
 	
+	public static String getStr(Object o) {
+		if (o == null || o.toString().trim().equals("") || o.toString().trim().equalsIgnoreCase("null") || o.toString().trim().equals("undefined")) {
+			return "";
+		} else {
+			return o.toString();
+		}
+	}
+	
 	public static String base64Encode(String str) {
 		if (snull(str)==null) {
 			return null;

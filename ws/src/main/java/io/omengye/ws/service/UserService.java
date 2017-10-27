@@ -40,7 +40,8 @@ public class UserService {
 	private static ConcurrentHashMap<String, UserEntity> superUser = new ConcurrentHashMap<>();
 	
 	static {
-		superUser.put(Constants.superusername, new UserEntity(Constants.superuserip, Constants.superusername, Constants.superuserpwd));
+		superUser.put(Constants.superusername, 
+				new UserEntity(Constants.superuserip, Constants.superusername, Constants.superuserpwd));
 	}
 	
 	public UserEntity getSuperUser(String username) {

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import io.omengye.ws.common.base.Constants;
+
 public class UserEntity implements Serializable{
 
 	private String userip;
@@ -46,7 +48,7 @@ public class UserEntity implements Serializable{
 	
 	
 	public List<String> getRoles() {
-		return Arrays.asList(new String[]{"USERS"});
+		return Arrays.asList(new String[]{Constants.roleUser});
 	}
 	
 }

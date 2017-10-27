@@ -68,6 +68,7 @@ public class IndexController {
 		return "Hello";
 	}
 	
+	@PreAuthorize("hasRole(T(io.omengye.ws.common.base.Constants).superrole)")
 	@RequestMapping("/json")
 	public Map<String, String> getJsonFromRequestParam(@RequestParam(value="type", required=false)String type) {
 		Map<String, String> map = new HashMap<>();
@@ -94,11 +95,11 @@ public class IndexController {
 	
     @GetMapping(value="/g")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public String ssltest(Principal principal, 
+    public HashMap<String, Object> ssltest(Principal principal, 
     		@RequestParam(value="q",required=false)String q,
     		@RequestParam(value="start",required=false)String start,
     		@RequestParam(value="num",required=false)String num)  throws Exception {
-		String result = "{}";
+    	HashMap<String, Object> result = new HashMap<>();
 		if (q==null || q.equals("")) {
 			return result;
 		}
@@ -125,8 +126,7 @@ public class IndexController {
     		if (!responses.isEmpty()) {
 				for (final Response response : responses) {
 					String str = response.getResponseBody();
-					HashMap<String, Object> map = searchService.parse(str);
-					result = JsonStream.serialize(map);
+					 result = searchService.parse(str);
 				}
 			}
     	}

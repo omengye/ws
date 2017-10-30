@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -126,7 +127,7 @@ public class IndexController {
     		if (!responses.isEmpty()) {
 				for (final Response response : responses) {
 					String str = response.getResponseBody();
-					 result = searchService.parse(str);
+					 result = searchService.parseItems(str);
 				}
 			}
     	}
@@ -138,9 +139,9 @@ public class IndexController {
     
     @GetMapping(value="/suggest")
     @PreAuthorize("#oauth2.hasScope('read')")
-    public HashMap<String, Object> suggest(Principal principal, 
+    public List<Object> suggest(Principal principal, 
     		@RequestParam(value="q",required=false)String q)  throws Exception {
-    	HashMap<String, Object> result = new HashMap<>();
+    	List<Object> result = new ArrayList<>();
 		if (q==null || q.equals("")) {
 			return result;
 		}
@@ -157,7 +158,7 @@ public class IndexController {
     		if (!responses.isEmpty()) {
 				for (final Response response : responses) {
 					String str = response.getResponseBody();
-					 result = searchService.parse(str);
+					 result = searchService.parseSuggest(str);
 				}
 			}
     	}

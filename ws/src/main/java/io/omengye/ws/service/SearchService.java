@@ -20,7 +20,7 @@ import io.omengye.ws.entity.ItemEntity;
 @Service
 public class SearchService {
 
-	public HashMap<String, Object> parse(String str) {
+	public HashMap<String, Object> parseItems(String str) {
 		HashMap<String, Object> res = new HashMap<>();
 		HashMap<String, Object> map = JsonIterator.deserialize(str, HashMap.class);
 		HashMap<String, Object> searchInformation = (HashMap<String, Object>)map.get("searchInformation");
@@ -34,4 +34,13 @@ public class SearchService {
 		
 		return res;
 	}
+	
+	public List<Object> parseSuggest(String str) {
+		List<Object> list = JsonIterator.deserialize(str, List.class);
+		if (list.size()<2) {
+			return new ArrayList<>();
+		}
+		return (List<Object>)list.get(1); 
+	}
+	
 }

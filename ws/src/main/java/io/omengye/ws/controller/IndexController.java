@@ -136,6 +136,37 @@ public class IndexController {
     	return result;
     }
     
+    @GetMapping(value="/suggest")
+    @PreAuthorize("#oauth2.hasScope('read')")
+    public HashMap<String, Object> suggest(Principal principal, 
+    		@RequestParam(value="q",required=false)String q)  throws Exception {
+    	HashMap<String, Object> result = new HashMap<>();
+		if (q==null || q.equals("")) {
+			return result;
+		}
+    	DefaultAsyncHttpClientConfig config = new DefaultAsyncHttpClientConfig.Builder().setAcceptAnyCertificate(true).build();
+    	AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient(config);
+    	try {
+    		final List<Response> responses = new CopyOnWriteArrayList<>();
+            final CountDownLatch latch = new CountDownLatch(1);
+            
+            String url = "https://www.google.com/complete/search?client=psy-ab&hl=zh-CN&gs_rn=64&gs_ri=psy-ab&cp=10"
+            		+ "&gs_id=nv&q="+q+"&xhr=t";
+            httpClientService.sslCallBack(asyncHttpClient, url, responses, latch);
+    		latch.await();
+    		if (!responses.isEmpty()) {
+				for (final Response response : responses) {
+					String str = response.getResponseBody();
+					 result = searchService.parse(str);
+				}
+			}
+    	}
+    	finally {
+    		asyncHttpClient.close();
+    	}
+    	return result;
+    }
+    
     /**
      * using
      * 

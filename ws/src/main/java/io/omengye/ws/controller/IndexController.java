@@ -25,6 +25,8 @@ import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.asynchttpclient.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -63,6 +65,12 @@ public class IndexController {
 	
 	//上传路径
 	private String path = "/var/www/html/";
+	
+	@Value("${google.key}")
+	private String googlekey;
+	
+	@Value("${google.cx}")
+	private String googlecx;
 	
 	@GetMapping("/")
 	public String welcome() {
@@ -110,8 +118,8 @@ public class IndexController {
     		final List<Response> responses = new CopyOnWriteArrayList<>();
             final CountDownLatch latch = new CountDownLatch(1);
             
-            String key = "";
-    		String cx= "";
+            String key = googlekey;
+    		String cx = googlecx;
     		
             if (start==null || start.equals("")) {
             	start="1";

@@ -18,7 +18,9 @@ eureka:
     instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
 
 Jwt:
-  url: "/jwt/token"
+  user:
+    name: 123
+    password: 123
   keyPair:
     privateExponent: 123
     modulus: 123

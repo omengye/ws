@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import io.omengye.userinfo.common.base.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,8 +25,6 @@ import io.omengye.userinfo.utils.Utils;
 @Service
 public class UserInfoService implements UserDetailsService {
 
-//@Service
-//public class UserInfoService {
 
 	@Autowired
 	private UserRepository userRepository;
@@ -72,17 +71,19 @@ public class UserInfoService implements UserDetailsService {
 	// username -> ip
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		String password = Utils.base64Encode(username);
 		String roles = "USERS";
-		PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-		
 		UserBuilder userBuilder = User.builder();
-		return userBuilder
-			.passwordEncoder(encoder::encode)
-			.username(username)
-			.password(password)
-			.roles(roles)
-			.build();
+		PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+
+		String password = Utils.base64Encode(username);
+
+		UserDetails build = userBuilder
+				.passwordEncoder(encoder::encode)
+				.username(username)
+				.password(password)
+				.roles(roles)
+				.build();
+		return build;
 	}
 	
 }

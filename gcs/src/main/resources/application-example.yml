@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: ws-gcs
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:9003/jwt/token
+server:
+  port: 9002
+  use-forwarded-headers: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:9001/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
+
+
+# google search
+google:
+  search[0]:
+    key: 1
+    cx: 1
+  search[1]:
+    key: 1
+    cx: 1
+  search[2]:
+    key: 1
+    cx: 1
+  search[3]:
+    key: 1
+    cx: 1

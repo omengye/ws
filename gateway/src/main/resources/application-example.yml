@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: ws-gateway
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lowerCaseServiceId: true
+      routes:
+        - id: ws-gcs
+          uri: lb://ws-gcs
+          predicates:
+            - Path=/gcs/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1  # 令牌桶的容积
+                redis-rate-limiter.burstCapacity: 10  # 流速 每秒
+                key-resolver: "#{@remoteAddrKeyResolver}" #SPEL表达式去的对应的bean
+            - StripPrefix=1
+        - id: ws-userinfo
+          uri: lb://ws-userinfo
+          predicates:
+            - Path=/user/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1  # 令牌桶的容积
+                redis-rate-limiter.burstCapacity: 3  # 流速 每秒
+                key-resolver: "#{@remoteAddrKeyResolver}" #SPEL表达式去的对应的bean
+            - StripPrefix=1
+server:
+  port: 9000
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    serviceUrl:
+      defaultZone: http://localhost:9001/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
+
+
+#logging:
+#  level:
+#    org.springframework.cloud.gateway: TRACE
+#    org.springframework.http.server.reactive: DEBUG
+#    org.springframework.web.reactive: DEBUG
+#    reactor.ipc.netty: DEBUG
+#    reactor.netty: DEBUG
+#
+#management.endpoints.web.exposure.include: '*'

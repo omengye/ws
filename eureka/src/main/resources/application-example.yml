@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: ws-eureka
+
+server:
+  port: 9001
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+  dashboard:
+    path: /
+    enabled: true

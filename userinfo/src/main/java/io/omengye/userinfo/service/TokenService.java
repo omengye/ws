@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import io.omengye.common.utils.Utils;
 import io.omengye.userinfo.annotation.CostTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -27,7 +28,6 @@ import org.springframework.security.oauth2.provider.token.AuthorizationServerTok
 import org.springframework.stereotype.Service;
 
 import io.omengye.userinfo.entity.TokenInfo;
-import io.omengye.userinfo.utils.Utils;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -47,7 +47,7 @@ public class TokenService {
     private AuthorizationServerTokenServices authorizationServerTokenServices;
     
     public TokenInfo genToken(String ip) {
-    	TokenInfo token = new TokenInfo(null, null); 
+    	TokenInfo token = new TokenInfo(null, null, null);
         if (!Utils.isNotEmpty(ip)) {
             return token;
         }
@@ -58,7 +58,7 @@ public class TokenService {
         	Date expirationDate = oauthToken.getExpiration();
         	String tokenStr = oauthToken.getValue();
         	String visittime = userInfoService.saveUser(ip, tokenStr, expirationDate);
-            return new TokenInfo(tokenStr, visittime);
+            return new TokenInfo(tokenStr, visittime, ip);
         }
         else {
             return token;

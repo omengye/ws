@@ -25,6 +25,10 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
 		
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -42,7 +46,13 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-oauth2-resource-server</artifactId>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>io.omengye</groupId>
+			<artifactId>common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>

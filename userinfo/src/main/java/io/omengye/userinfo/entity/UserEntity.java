@@ -22,6 +22,8 @@ public class UserEntity implements Serializable {
 	private String token;
 	
 	private String visittime;
+
+	private Integer vcount;
 	
 	@TimeToLive(unit = TimeUnit.SECONDS)
     private Long expirationTime;
@@ -34,7 +36,11 @@ public class UserEntity implements Serializable {
 	}
 
 	public TokenInfo getTokenInfo() {
-		return new TokenInfo(token, visittime);
+		return new TokenInfo(token, visittime, id);
+	}
+
+	public UserInfo getUserInfo() {
+		return new UserInfo(visittime, id, vcount);
 	}
 	
 }

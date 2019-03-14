@@ -1,5 +1,6 @@
 package io.omengye.userinfo;
 
+import io.omengye.common.utils.Utils;
 import io.omengye.userinfo.service.TokenService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +25,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import io.omengye.userinfo.repository.UserRepository;
 import io.omengye.userinfo.service.UserInfoService;
-import io.omengye.userinfo.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;

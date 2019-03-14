@@ -1,10 +1,12 @@
 package io.omengye.userinfo.service;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.omengye.userinfo.common.base.Constants;
+import io.omengye.userinfo.entity.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.User;
@@ -20,7 +22,7 @@ import io.omengye.userinfo.annotation.CostTime;
 import io.omengye.userinfo.entity.TokenInfo;
 import io.omengye.userinfo.entity.UserEntity;
 import io.omengye.userinfo.repository.UserRepository;
-import io.omengye.userinfo.utils.Utils;
+import io.omengye.common.utils.Utils;
 
 @Service
 public class UserInfoService implements UserDetailsService {
@@ -28,6 +30,27 @@ public class UserInfoService implements UserDetailsService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Value("${Jwt.user.name}")
+	private String jwtUser;
+
+	@Value("${Jwt.user.password}")
+	private String jwtPassword;
+
+	public boolean notValidUser(String user, String password) {
+		return user==null || password==null || user.length()!=jwtUser.length() || password.length()!=jwtPassword.length()
+				|| !jwtUser.equals(user) || !jwtPassword.equals(password);
+	}
+
+	public List<UserInfo> getAllUser() {
+		List<UserInfo> list = new ArrayList<>();
+		Iterator<UserEntity> iter = userRepository.findAll().iterator();
+		while (iter.hasNext()) {
+			UserInfo userInfo = iter.next().getUserInfo();
+			list.add(userInfo);
+		}
+		return list;
+	}
 	
 	public UserEntity getUserByIp(String userIp) {
 		if (!userRepository.existsById(userIp)) {
@@ -66,6 +89,22 @@ public class UserInfoService implements UserDetailsService {
 		user.setExpirationTime(expire);
 		userRepository.save(user);
 		return visittime;
+	}
+
+	public boolean addVisitCount(String userIp) {
+		UserEntity user = getUserByIp(userIp);
+		if(user == null) {
+			return false;
+		}
+		Integer count = user.getVcount();
+		if (count == null) {
+			user.setVcount(1);
+		}
+		else {
+			user.setVcount(count+1);
+		}
+		userRepository.save(user);
+		return true;
 	}
 
 	// username -> ip

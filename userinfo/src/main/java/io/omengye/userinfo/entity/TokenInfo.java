@@ -11,11 +11,14 @@ public class TokenInfo {
 	private String visittime;
 	
 	private Long expire;
+
+	private String ip;
 	
-	public TokenInfo(String token, String visittime) {
+	public TokenInfo(String token, String visittime, String ip) {
 		this.token = token;
 		this.visittime = visittime;
-		this.expire = Long.valueOf(Constants.expireTokenTime);
+		this.ip = ip;
+		this.expire = (long) Constants.expireTokenTime;
 	}
 	
 }

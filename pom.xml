@@ -73,9 +73,10 @@
 	</dependencyManagement>
   
 	<modules>
+		<module>common</module>
 		<module>gcs</module>
 		<module>eureka</module>
     	<module>gateway</module>
     	<module>userinfo</module>
-  </modules>
+    </modules>
 </project>

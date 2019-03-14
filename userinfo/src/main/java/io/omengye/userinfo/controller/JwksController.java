@@ -3,13 +3,18 @@ package io.omengye.userinfo.controller;
 import java.security.KeyPair;
 import java.security.Principal;
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import io.omengye.common.utils.Utils;
+import io.omengye.userinfo.common.Tools;
 import io.omengye.userinfo.entity.TokenInfo;
+import io.omengye.userinfo.entity.UserEntity;
+import io.omengye.userinfo.entity.UserInfo;
 import io.omengye.userinfo.service.TokenService;
 import io.omengye.userinfo.service.UserInfoService;
-import io.omengye.userinfo.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -26,19 +31,16 @@ public class JwksController {
 	private TokenService tokenService;
 
 	@Autowired
+	private UserInfoService userInfoService;
+
+	@Autowired
 	private KeyPair keyPair;
-
-	@Value("${Jwt.user.name}")
-	private String jwtUser;
-
-	@Value("${Jwt.user.password}")
-	private String jwtPassword;
 
 
 	@GetMapping("/.well-known/jwks.json")
-	public Map<String, Object> getKey(@RequestParam String user, @RequestParam String password) {
-		if (user==null || password==null || user.length()!=jwtUser.length() || password.length()!=jwtPassword.length()
-			|| !jwtUser.equals(user) || !jwtPassword.equals(password)) {
+	public Map<String, Object> getKey(@RequestParam(required = false) String user,
+									  @RequestParam(required = false) String password) {
+		if (userInfoService.notValidUser(user, password)) {
 			return new HashMap<>();
 		}
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
@@ -49,11 +51,33 @@ public class JwksController {
 
 	@GetMapping("/genToken")
 	public TokenInfo getToken(HttpServletRequest req) {
-		String userip = Utils.getRealIP(req);
+		String userip = Tools.getRealIP(req);
 		if (!Utils.isNotEmpty(userip)) {
-			return new TokenInfo(null, null);
+			return new TokenInfo(null, null, null);
 		}
 		return tokenService.genToken(userip);
+	}
+
+	@GetMapping("/users")
+	public List<UserInfo> getAllUser(@RequestParam(required = false) String user,
+									 @RequestParam(required = false) String password) {
+		if (userInfoService.notValidUser(user, password)) {
+			return new ArrayList<>();
+		}
+		return userInfoService.getAllUser();
+	}
+
+	@GetMapping("/visit")
+	public Map<String, Boolean> addVisitCount(@RequestParam String userip,
+							  @RequestParam(required = false) String user,
+							  @RequestParam(required = false) String password) {
+		boolean flag = false;
+		Map<String, Boolean> res = new HashMap<>();
+		if (!userInfoService.notValidUser(user, password)) {
+			flag = userInfoService.addVisitCount(userip);
+		}
+		res.put("flag", flag);
+		return res;
 	}
 
 }

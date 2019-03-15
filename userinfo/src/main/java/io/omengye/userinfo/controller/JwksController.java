@@ -59,21 +59,15 @@ public class JwksController {
 	}
 
 	@GetMapping("/users")
-	public List<UserInfo> getAllUser(@RequestParam(required = false) String user,
-									 @RequestParam(required = false) String password) {
-		if (userInfoService.notValidUser(user, password)) {
-			return new ArrayList<>();
-		}
+	public List<UserInfo> getAllUser() {
 		return userInfoService.getAllUser();
 	}
 
 	@GetMapping("/visit")
-	public Map<String, Boolean> addVisitCount(@RequestParam String userip,
-							  @RequestParam(required = false) String user,
-							  @RequestParam(required = false) String password) {
+	public Map<String, Boolean> addVisitCount(@RequestParam String userip) {
 		boolean flag = false;
 		Map<String, Boolean> res = new HashMap<>();
-		if (!userInfoService.notValidUser(user, password)) {
+		if (Utils.isNotEmpty(userip)) {
 			flag = userInfoService.addVisitCount(userip);
 		}
 		res.put("flag", flag);

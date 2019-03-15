@@ -13,7 +13,6 @@ import java.util.Map;
 public interface UserInfoService  {
 
     @GetMapping("/visit")
-    public Map<String, Boolean> addVisitCount(@RequestParam String userip, @RequestParam(required = false) String user,
-                                              @RequestParam(required = false) String password);
+    public Map<String, Boolean> addVisitCount(@RequestParam String userip);
 
 }

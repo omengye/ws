@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.omengye.userinfo.common.base.Constants;
 import io.omengye.userinfo.entity.UserInfo;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.User;
@@ -24,6 +25,7 @@ import io.omengye.userinfo.entity.UserEntity;
 import io.omengye.userinfo.repository.UserRepository;
 import io.omengye.common.utils.Utils;
 
+@Log4j2
 @Service
 public class UserInfoService implements UserDetailsService {
 
@@ -92,6 +94,7 @@ public class UserInfoService implements UserDetailsService {
 	}
 
 	public boolean addVisitCount(String userIp) {
+
 		UserEntity user = getUserByIp(userIp);
 		if(user == null) {
 			return false;
@@ -99,6 +102,9 @@ public class UserInfoService implements UserDetailsService {
 		Integer count = user.getVcount();
 		if (count == null) {
 			user.setVcount(1);
+		}
+		else if (count > Constants.maxVisit) {
+			return false;
 		}
 		else {
 			user.setVcount(count+1);
@@ -114,7 +120,13 @@ public class UserInfoService implements UserDetailsService {
 		UserBuilder userBuilder = User.builder();
 		PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-		String password = Utils.base64Encode(username);
+		String password;
+		if (jwtUser.equals(username)) {
+			password = jwtPassword;
+		}
+		else {
+			password = Utils.base64Encode(username);
+		}
 
 		UserDetails build = userBuilder
 				.passwordEncoder(encoder::encode)

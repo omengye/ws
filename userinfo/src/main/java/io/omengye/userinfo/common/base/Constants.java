@@ -7,6 +7,8 @@ public class Constants {
 	
 	public static final int expireRefreshTokenTime = 12*3600;
 
+	public static final int maxVisit = 5000;
+
 	// user setting
 	public static final String rolePrefix = "ROLE_";
 	public static final String roleAdmin = "ADMIN";

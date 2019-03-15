@@ -23,7 +23,7 @@ public class UserEntity implements Serializable {
 	
 	private String visittime;
 
-	private Integer vcount;
+	private Integer vcount = 0;
 	
 	@TimeToLive(unit = TimeUnit.SECONDS)
     private Long expirationTime;

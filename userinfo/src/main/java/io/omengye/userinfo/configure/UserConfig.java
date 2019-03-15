@@ -18,7 +18,7 @@ class UserConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .mvcMatchers("/.well-known/jwks.json", "/actuator/info",
-                        "/genToken", "/users", "/visit")
+                        "/genToken")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and().httpBasic();

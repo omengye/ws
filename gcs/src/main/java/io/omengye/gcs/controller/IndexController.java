@@ -7,10 +7,13 @@ import io.omengye.common.utils.Utils;
 import io.omengye.gcs.entity.GCResponseEntity;
 import io.omengye.gcs.service.UserInfoService;
 import io.omengye.gcs.service.WebClientService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.util.LinkedMultiValueMap;
@@ -27,6 +30,9 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 
+import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
+
+@Log4j2
 @RestController
 public class IndexController {
 
@@ -36,21 +42,15 @@ public class IndexController {
 	@Autowired
 	private UserInfoService userInfoService;
 
-	@Value("${userinfo.user.name}")
-	private String username;
-
-	@Value("${userinfo.user.password}")
-	private String password;
-
 	@GetMapping(value="/api/g", produces=MediaType.APPLICATION_JSON_VALUE)
 	public Mono<GCResponseEntity> g(@RequestParam(value="q",required=false)String q,
 									@RequestParam(value="start",required=false)String start,
 									@RequestParam(value="num",required=false)String num,
 									ServerWebExchange exchange) {
 		String userip = Utils.getRealIP(exchange.getRequest());
-		Map<String, Boolean> flag = userInfoService.addVisitCount(userip, username, password);
+		Map<String, Boolean> flag = userInfoService.addVisitCount(userip);
 		if (!flag.get("flag")) {
-			return Mono.error(new ClientException("This User: " +  (userip==null?"":userip) + " Not Exist!"));
+			return Mono.error(new AuthenticationServiceException("This User: " +  (userip==null?"":userip) + " Not Exist!"));
 		}
 
 		//Mono<GCEntity> result = webClientService.getReponse("http://127.0.0.1:8443/gc/test", "", GCEntity.class);

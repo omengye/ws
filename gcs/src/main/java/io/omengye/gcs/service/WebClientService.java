@@ -38,7 +38,6 @@ public class WebClientService {
 
         String url = "https://www.googleapis.com/customsearch/v1?key="
                 +item.getKey()+"&cx="+item.getCx()+"&q="+q+"&start="+start+"&num="+num;
-        log.info(item.toString());
         return getReponse(url, "", new GCEntity(), GCEntity.class, item);
     }
 

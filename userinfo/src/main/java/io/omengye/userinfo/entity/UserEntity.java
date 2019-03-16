@@ -16,7 +16,6 @@ public class UserEntity implements Serializable {
 	
 	// userip
 	@Id
-	@Indexed
 	private String id;
 
 	private String token;
@@ -25,10 +24,10 @@ public class UserEntity implements Serializable {
 
 	private Integer vcount = 0;
 	
-	@TimeToLive(unit = TimeUnit.SECONDS)
+	@TimeToLive
     private Long expirationTime;
 	
-	public UserEntity() {};
+	public UserEntity() {}
 	
 	public UserEntity(String id, String visittime) {
 		this.id = id;

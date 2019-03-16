@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import io.omengye.userinfo.common.base.Constants;
 import io.omengye.userinfo.entity.UserInfo;
@@ -46,11 +47,11 @@ public class UserInfoService implements UserDetailsService {
 
 	public List<UserInfo> getAllUser() {
 		List<UserInfo> list = new ArrayList<>();
-		Iterator<UserEntity> iter = userRepository.findAll().iterator();
-		while (iter.hasNext()) {
-			UserInfo userInfo = iter.next().getUserInfo();
-			list.add(userInfo);
-		}
+		userRepository.findAll().forEach(i->{
+			if (i != null) {
+				list.add(i.getUserInfo());
+			}
+		});
 		return list;
 	}
 	

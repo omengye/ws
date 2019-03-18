@@ -21,7 +21,7 @@ public class ItemEntity {
 	
 	private String link;
 	
-	private String snippet;
+//	private String snippet;
 	
 //	private String title;
 }

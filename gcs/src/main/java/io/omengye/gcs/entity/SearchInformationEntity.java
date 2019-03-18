@@ -9,8 +9,8 @@ public class SearchInformationEntity {
 	
 	private String formattedTotalResults;
 	
-	private Float searchTime;
-	
-	private String totalResults;
+//	private Float searchTime;
+
+//	private String totalResults;
 	
 }

@@ -52,6 +52,14 @@ public class UserInfoService implements UserDetailsService {
 				list.add(i.getUserInfo());
 			}
 		});
+
+		Collections.sort(list, new Comparator<UserInfo>() {
+			@Override
+			public int compare(UserInfo o1, UserInfo o2) {
+				return o2.getCount() - o1.getCount();
+			}
+		});
+
 		return list;
 	}
 	

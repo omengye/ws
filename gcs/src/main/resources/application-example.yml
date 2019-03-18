@@ -18,6 +18,10 @@ eureka:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
 
+ribbon:
+  eureka:
+    enabled: true
+
 userinfo:
   user:
     name: 123

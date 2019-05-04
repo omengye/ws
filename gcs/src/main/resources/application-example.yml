@@ -8,7 +8,7 @@ spring:
           jwk-set-uri: http://localhost:9003/.well-known/jwks.json?user=${userinfo.user.name}&password=${userinfo.user.password}
 server:
   port: 9002
-  use-forwarded-headers: true
+  use-forward-headers: true
 
 eureka:
   client:

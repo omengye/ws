@@ -19,11 +19,14 @@ public class GCEntity {
 	
 	private UrlEntity url;
 
+	private Spelling spelling;
+
 	public GCResponseEntity getGCResponseEntity() {
 		GCResponseEntity entity = new GCResponseEntity();
 		entity.setContext(context);
 		entity.setItems(items);
 		entity.setSearchInformation(searchInformation);
+		entity.setSpelling(spelling);
 		return entity;
 	}
 

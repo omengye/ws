@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 
-@ConfigurationProperties(prefix ="my.prop")
+
 @Data
 public class GCResponseEntity {
 
@@ -16,5 +16,6 @@ public class GCResponseEntity {
 
     private SearchInformationEntity searchInformation;
 
+    private Spelling spelling;
 
 }

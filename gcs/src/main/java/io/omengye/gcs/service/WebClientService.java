@@ -1,9 +1,13 @@
 package io.omengye.gcs.service;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeoutException;
 
+import io.netty.channel.ConnectTimeoutException;
+import io.omengye.common.utils.Utils;
 import io.omengye.gcs.entity.GCEntity;
 import io.omengye.gcs.entity.GSearchItem;
+import io.omengye.gcs.entity.SearchEntity;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,11 +37,9 @@ public class WebClientService {
     @Autowired
     private ChooseItemService chooseItemService;
 
-    public Mono<GCEntity> getSearchReponse(String q, String start, String num) {
+    public Mono<GCEntity> getSearchReponse(SearchEntity searchEntity) {
         GSearchItem item = chooseItemService.getItem();
-
-        String url = "https://www.googleapis.com/customsearch/v1?key="
-                +item.getKey()+"&cx="+item.getCx()+"&q="+q+"&start="+start+"&num="+num;
+        String url = genSearchUrl(searchEntity, item);
         return getReponse(url, "", new GCEntity(), GCEntity.class, item);
     }
 
@@ -45,6 +47,20 @@ public class WebClientService {
     public ResponseEntity<String> handleWebClientResponseException(WebClientResponseException ex) {
         log.error("Error from WebClient - Status {}, Body {}", ex.getRawStatusCode(), ex.getResponseBodyAsString(), ex);
         return ResponseEntity.status(ex.getRawStatusCode()).body(ex.getResponseBodyAsString());
+    }
+
+
+    private String genSearchUrl(SearchEntity searchEntity, GSearchItem item) {
+        String url = "https://www.googleapis.com/customsearch/v1?" +
+                "key="+item.getKey()
+                +"&cx="+item.getCx()
+                +"&q="+searchEntity.getQ()
+                +"&start="+searchEntity.getStart()
+                +"&num="+searchEntity.getNum();
+        if (Utils.isNotEmpty(searchEntity.getSort())) {
+            url+="&sort="+searchEntity.getSort();
+        }
+        return url;
     }
 
     private Mono<? extends Throwable> mapCommonError(final ClientResponse response) {
@@ -91,6 +107,10 @@ public class WebClientService {
                 .bodyToMono(clazz)
                 .doOnError(WebClientResponseException.class, err -> {
                     log.info("ERROR status:{},msg:{}",err.getRawStatusCode(),err.getResponseBodyAsString());
+                    throw new RuntimeException(err.getMessage());
+                })
+                .doOnError(ConnectTimeoutException.class, err -> {
+                    log.error(err.getMessage());
                     throw new RuntimeException(err.getMessage());
                 })
                 .onErrorReturn(obj);

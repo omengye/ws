@@ -1,16 +1,12 @@
 package io.omengye.gcs.service;
 
-import java.util.HashMap;
-import java.util.concurrent.TimeoutException;
-
 import io.netty.channel.ConnectTimeoutException;
 import io.omengye.common.utils.Utils;
 import io.omengye.gcs.entity.GCEntity;
 import io.omengye.gcs.entity.GSearchItem;
-import io.omengye.gcs.entity.SearchEntity;
+import io.omengye.gcs.entity.ReqEntity;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -37,9 +33,9 @@ public class WebClientService {
     @Autowired
     private ChooseItemService chooseItemService;
 
-    public Mono<GCEntity> getSearchReponse(SearchEntity searchEntity) {
+    public Mono<GCEntity> getSearchReponse(ReqEntity req) {
         GSearchItem item = chooseItemService.getItem();
-        String url = genSearchUrl(searchEntity, item);
+        String url = genSearchUrl(req, item);
         return getReponse(url, "", new GCEntity(), GCEntity.class, item);
     }
 
@@ -50,16 +46,11 @@ public class WebClientService {
     }
 
 
-    private String genSearchUrl(SearchEntity searchEntity, GSearchItem item) {
+    private String genSearchUrl(ReqEntity req, GSearchItem item) {
         String url = "https://www.googleapis.com/customsearch/v1?" +
                 "key="+item.getKey()
                 +"&cx="+item.getCx()
-                +"&q="+searchEntity.getQ()
-                +"&start="+searchEntity.getStart()
-                +"&num="+searchEntity.getNum();
-        if (Utils.isNotEmpty(searchEntity.getSort())) {
-            url+="&sort="+searchEntity.getSort();
-        }
+                + req.toString();
         return url;
     }
 

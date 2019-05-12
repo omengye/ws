@@ -2,36 +2,24 @@ package io.omengye.gcs.controller;
 
 import java.util.*;
 
-import com.netflix.client.ClientException;
 import io.omengye.common.utils.Utils;
 import io.omengye.gcs.entity.GCResponseEntity;
-import io.omengye.gcs.entity.SearchEntity;
+import io.omengye.gcs.entity.ReqEntity;
 import io.omengye.gcs.service.UserInfoService;
 import io.omengye.gcs.service.WebClientService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import io.netty.channel.ChannelOption;
-import io.netty.handler.timeout.ReadTimeoutHandler;
-import io.netty.handler.timeout.WriteTimeoutHandler;
 import io.omengye.gcs.entity.GCEntity;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.client.HttpClient;
-import reactor.netty.tcp.TcpClient;
 
-import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
+import javax.validation.Valid;
 
 @Log4j2
 @RestController
@@ -44,10 +32,7 @@ public class IndexController {
 	private UserInfoService userInfoService;
 
 	@GetMapping(value="/api/g", produces=MediaType.APPLICATION_JSON_VALUE)
-	public Mono<GCResponseEntity> g(@RequestParam(value="q",required=false)String q,
-									@RequestParam(value="start",required=false)String start,
-									@RequestParam(value="num",required=false)String num,
-									@RequestParam(value = "sort", required = false)String sort,
+	public Mono<GCResponseEntity> g(@Valid ReqEntity req,
 									ServerWebExchange exchange) {
 		String userip = Utils.getRealIP(exchange.getRequest());
 		Map<String, Boolean> flag = userInfoService.addVisitCount(userip);
@@ -55,19 +40,7 @@ public class IndexController {
 			return Mono.error(new AuthenticationServiceException("This User: " +  (userip==null?"":userip) + " Not Exist!"));
 		}
 
-		if (start==null || start.equals("")) {
-			start="1";
-		}
-		if (num==null || num.equals("")) {
-			num="10";
-		}
-
-		SearchEntity entity = new SearchEntity(q, start, num);
-		if (Utils.isNotEmpty(sort) && sort.equals("date")) {
-			entity.setSort(sort);
-		}
-
-		Mono<GCEntity> result = webClientService.getSearchReponse(entity);
+		Mono<GCEntity> result = webClientService.getSearchReponse(req);
 
 		return result.map(t -> t.getGCResponseEntity());
 	}

@@ -101,4 +101,14 @@ public class Utils {
         return XFor;
     }
 
+    public static String filterQuery(String q, String[] filters) {
+        if (justNull(q)==null || filters==null || filters.length<1) {
+            return q;
+        }
+        for (String f : filters) {
+            q = q.replace(f, "");
+        }
+        return q;
+    }
+
 }

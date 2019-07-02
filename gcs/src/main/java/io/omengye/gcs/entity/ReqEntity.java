@@ -50,7 +50,7 @@ public class ReqEntity {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("&q=").append(q)
+        sb.append("&q=").append(Utils.filterQuery(q, new String[]{"{","}","#","\\","/"}))
                 .append("&start=").append(start)
                 .append("&num=").append(num);
         if (Utils.isNotEmpty(sort)) {

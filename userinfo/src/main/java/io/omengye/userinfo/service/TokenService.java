@@ -57,8 +57,8 @@ public class TokenService {
         	//OAuth2AccessToken oauthToken = getTokenFromResponse(ip);
         	Date expirationDate = oauthToken.getExpiration();
         	String tokenStr = oauthToken.getValue();
-        	String visittime = userInfoService.saveUser(ip, tokenStr, expirationDate);
-            return new TokenInfo(tokenStr, visittime, ip);
+        	String visitTime = userInfoService.saveUser(ip, tokenStr, expirationDate);
+            return new TokenInfo(tokenStr, visitTime, ip);
         }
         else {
             return token;

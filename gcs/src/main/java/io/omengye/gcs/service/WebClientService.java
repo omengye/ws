@@ -24,6 +24,7 @@ import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.tcp.ProxyProvider;
 import reactor.netty.tcp.TcpClient;
 
 @Log4j2
@@ -67,6 +68,10 @@ public class WebClientService {
         TcpClient tcpClient = TcpClient.create()
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000)
             .option(ChannelOption.SO_KEEPALIVE, true)
+            .proxy(spec -> spec.type(ProxyProvider.Proxy.SOCKS5)
+                    .host("127.0.0.1")
+                    .port(1080)
+                    .nonProxyHosts("localhost,127.0.0.1,192.168.*"))
             .doOnConnected(connection ->
                 connection
                 .addHandlerLast(new ReadTimeoutHandler(2))

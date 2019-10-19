@@ -20,7 +20,7 @@ public class UserEntity implements Serializable {
 
 	private String token;
 	
-	private String visittime;
+	private String visitTime;
 
 	private Integer vcount = 0;
 	
@@ -29,17 +29,17 @@ public class UserEntity implements Serializable {
 	
 	public UserEntity() {}
 	
-	public UserEntity(String id, String visittime) {
+	public UserEntity(String id, String visitTime) {
 		this.id = id;
-		this.visittime = visittime;
+		this.visitTime = visitTime;
 	}
 
 	public TokenInfo getTokenInfo() {
-		return new TokenInfo(token, visittime, id);
+		return new TokenInfo(token, visitTime, id);
 	}
 
 	public UserInfo getUserInfo() {
-		return new UserInfo(visittime, id, vcount);
+		return new UserInfo(visitTime, id, vcount);
 	}
 	
 }

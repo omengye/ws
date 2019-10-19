@@ -8,15 +8,15 @@ public class TokenInfo {
 
 	private String token;
 	
-	private String visittime;
+	private String visitTime;
 	
 	private Long expire;
 
 	private String ip;
 	
-	public TokenInfo(String token, String visittime, String ip) {
+	public TokenInfo(String token, String visitTime, String ip) {
 		this.token = token;
-		this.visittime = visittime;
+		this.visitTime = visitTime;
 		this.ip = ip;
 		this.expire = (long) Constants.expireTokenTime;
 	}

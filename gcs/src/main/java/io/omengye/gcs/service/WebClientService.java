@@ -1,7 +1,10 @@
 package io.omengye.gcs.service;
 
+import com.netflix.client.ClientException;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.ConnectTimeoutException;
-import io.omengye.common.utils.Utils;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import io.omengye.gcs.entity.GCEntity;
 import io.omengye.gcs.entity.GSearchItem;
 import io.omengye.gcs.entity.ReqEntity;
@@ -15,12 +18,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.Builder;
-
-import com.netflix.client.ClientException;
-
-import io.netty.channel.ChannelOption;
-import io.netty.handler.timeout.ReadTimeoutHandler;
-import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
@@ -48,11 +45,10 @@ public class WebClientService {
 
 
     private String genSearchUrl(ReqEntity req, GSearchItem item) {
-        String url = "https://www.googleapis.com/customsearch/v1?" +
+        return  "https://www.googleapis.com/customsearch/v1?" +
                 "key="+item.getKey()
                 +"&cx="+item.getCx()
                 + req.toString();
-        return url;
     }
 
     private Mono<? extends Throwable> mapCommonError(final ClientResponse response) {
@@ -70,25 +66,24 @@ public class WebClientService {
             .option(ChannelOption.SO_KEEPALIVE, true)
             .proxy(spec -> spec.type(ProxyProvider.Proxy.SOCKS5)
                     .host("127.0.0.1")
-                    .port(1080)
+                    .port(1032)
                     .nonProxyHosts("localhost,127.0.0.1,192.168.*"))
             .doOnConnected(connection ->
-                connection
-                .addHandlerLast(new ReadTimeoutHandler(2))
-                .addHandlerLast(new WriteTimeoutHandler(2))
-        );
-
+                    connection
+                            .addHandlerLast(new ReadTimeoutHandler(2))
+                            .addHandlerLast(new WriteTimeoutHandler(2))
+            );
 
         Builder webBuilder = WebClient.builder();
         if (authHeader!=null && !"".equals(authHeader)) {
         	webBuilder.defaultHeader("Authorization", authHeader);
         }
-        
-        WebClient webClient = webBuilder 
+
+        WebClient webClient = webBuilder
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
                 .build();
 
-        Mono<T> result = webClient
+        return webClient
         		.get()
         		.uri(reqUrl)
                 .accept(MediaType.APPLICATION_JSON)
@@ -110,9 +105,6 @@ public class WebClientService {
                     throw new RuntimeException(err.getMessage());
                 })
                 .onErrorReturn(obj);
-
-
-        return result;
     }
 
 }

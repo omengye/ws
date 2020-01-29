@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Configuration
-class UserConfig extends WebSecurityConfigurerAdapter {
+public class UserConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserInfoService userInfoService;

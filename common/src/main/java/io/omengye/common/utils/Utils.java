@@ -2,69 +2,45 @@ package io.omengye.common.utils;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
-import java.net.InetAddress;
+import javax.servlet.http.HttpServletRequest;
 import java.net.InetSocketAddress;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 public class Utils {
 
-    public static final String[] connectips = new String[]{"CF-Connecting-IP", "HTTP_CF_CONNECTING_IP"};
+    private static final String[] CONNECT_IPS = new String[]{"CF-Connecting-IP", "HTTP_CF_CONNECTING_IP"};
 
-    public static final String[] proxyips = new String[]{"X-Forwarded-For", "X-Real-IP", "Proxy-Client-IP",
+    private static final String[] PROXY_IPS = new String[]{"X-Forwarded-For", "X-Real-IP", "Proxy-Client-IP",
             "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR"};
 
+    private static final String UNKNOWN_IP = "unknown";
+
     public static String justNull(Object o) {
-        if (o == null || o.toString().trim().equals("") || o.toString().trim().equalsIgnoreCase("null") || o.toString().trim().equals("undefined")) {
-            return null;
-        } else {
-            return o.toString();
-        }
+        return ObjectUtils.isEmpty(o) || StringUtils.isEmpty(o.toString()) ? null : o.toString();
     }
 
     public static boolean isNotEmpty(Object o) {
-        if (justNull(o)==null) {
-            return false;
-        }
-        return true;
+        return justNull(o) != null;
     }
 
-    public static String justListNull(List o) {
-        if (o==null || o.size()<1) {
-            return null;
-        }
-        else if (!(o.get(0) instanceof String)) {
-            return null;
-        }
-        else if (o.get(0).toString().trim().equals("") || o.get(0).toString().trim().equalsIgnoreCase("null")
-                || o.get(0).toString().trim().equals("undefined")) {
+    public static String justListNull(List<String> o) {
+        if (ObjectUtils.isEmpty(o) || StringUtils.isEmpty(o.get(0))) {
             return null;
         } else {
-            return o.get(0).toString();
+            return o.get(0);
         }
-    }
-
-
-    public static String justObjectNull(Object obj) {
-        if (obj == null) {
-            return null;
-        }
-        if (obj instanceof String) {
-            return justNull(obj);
-        }
-        else if(obj instanceof List) {
-            return justListNull((List)obj);
-        }
-        return null;
     }
 
     public static boolean isListNotEmpty(List<String> o) {
-        if (justListNull(o)==null) {
-            return false;
-        }
-        return true;
+        return justListNull(o) != null;
     }
 
     public static String base64Encode(String str) {
@@ -75,34 +51,47 @@ public class Utils {
         return new String(encodedBytes);
     }
 
-    public static String getRealIP(ServerHttpRequest request) {
+    public static String getServletRealIp(HttpServletRequest request) {
+        HttpHeaders httpHeaders = Collections
+                .list(request.getHeaderNames())
+                .stream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        h -> Collections.list(request.getHeaders(h)),
+                        (oldValue, newValue) -> newValue,
+                        HttpHeaders::new
+                ));
+        return getRealIpFromHeaders(httpHeaders, request.getRemoteAddr());
+    }
+
+    public static String getServerRealIp(ServerHttpRequest request) {
         HttpHeaders headers = request.getHeaders();
-        for (String connectip : Utils.connectips) {
-            if (Utils.isListNotEmpty(headers.get(connectip))) {
-                return Utils.justListNull(headers.get(connectip));
-            }
-        }
+        InetSocketAddress addr = request.getRemoteAddress();
+        String xFor = addr == null ? "" : addr.getAddress().getHostAddress();
+        return getRealIpFromHeaders(headers, xFor);
+    }
 
-        String XFor = "";
-
-        for (String proxyip : Utils.proxyips) {
-            XFor = Utils.justListNull(headers.get(proxyip));
-            if (Utils.isNotEmpty(XFor) && !"unknown".equalsIgnoreCase(XFor)) {
-                return XFor;
+    private static String getRealIpFromHeaders(HttpHeaders headers, String addr) {
+        for (String connectIp : CONNECT_IPS) {
+            if (Utils.isListNotEmpty(headers.get(connectIp))) {
+                return Utils.justListNull(headers.get(connectIp));
             }
         }
-        if (!Utils.isNotEmpty(XFor)|| "unknown".equalsIgnoreCase(XFor)) {
-            InetSocketAddress addr = request.getRemoteAddress();
-            if (addr == null) {
-                return XFor;
+        String xFor = "";
+        for (String proxyIp : PROXY_IPS) {
+            xFor = Utils.justListNull(headers.get(proxyIp));
+            if (Utils.isNotEmpty(xFor) && !UNKNOWN_IP.equalsIgnoreCase(xFor)) {
+                return xFor;
             }
-            XFor = addr.getAddress().getHostAddress();
         }
-        return XFor;
+        if (!Utils.isNotEmpty(xFor) || UNKNOWN_IP.equalsIgnoreCase(xFor)) {
+            xFor = addr;
+        }
+        return xFor;
     }
 
     public static String filterQuery(String q, String[] filters) {
-        if (justNull(q)==null || filters==null || filters.length<1) {
+        if (justNull(q)==null || ObjectUtils.isEmpty(filters)) {
             return q;
         }
         for (String f : filters) {

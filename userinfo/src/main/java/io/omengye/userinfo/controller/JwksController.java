@@ -1,61 +1,54 @@
 package io.omengye.userinfo.controller;
 
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import io.omengye.common.utils.Utils;
+import io.omengye.userinfo.entity.TokenInfo;
+import io.omengye.userinfo.entity.UserInfo;
+import io.omengye.userinfo.service.TokenService;
+import io.omengye.userinfo.service.UserInfoService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
 import java.security.KeyPair;
-import java.security.Principal;
 import java.security.interfaces.RSAPublicKey;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.omengye.common.utils.Utils;
-import io.omengye.userinfo.common.Tools;
-import io.omengye.userinfo.entity.TokenInfo;
-import io.omengye.userinfo.entity.UserEntity;
-import io.omengye.userinfo.entity.UserInfo;
-import io.omengye.userinfo.service.TokenService;
-import io.omengye.userinfo.service.UserInfoService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
-
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-
-import javax.servlet.http.HttpServletRequest;
-
 @RestController
 public class JwksController {
 
-	@Autowired
 	private TokenService tokenService;
-
-	@Autowired
 	private UserInfoService userInfoService;
-
-	@Autowired
 	private KeyPair keyPair;
 
+	public JwksController(TokenService tokenService, UserInfoService userInfoService, KeyPair keyPair) {
+		this.tokenService = tokenService;
+		this.userInfoService = userInfoService;
+		this.keyPair = keyPair;
+	}
 
 	@GetMapping("/.well-known/jwks.json")
 	public Map<String, Object> getKey(@RequestParam(required = false) String user,
 									  @RequestParam(required = false) String password) {
 		if (userInfoService.notValidUser(user, password)) {
-			return new HashMap<>();
+			return new HashMap<>(0);
 		}
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
 		RSAKey key = new RSAKey.Builder(publicKey).build();
 		return new JWKSet(key).toJSONObject();
 	}
 
-
 	@GetMapping("/genToken")
 	public TokenInfo getToken(HttpServletRequest req) {
-		String userip = Tools.getRealIP(req);
-		if (!Utils.isNotEmpty(userip)) {
+		String userIp = Utils.getServletRealIp(req);
+		if (!Utils.isNotEmpty(userIp)) {
 			return new TokenInfo(null, null, null);
 		}
-		return tokenService.genToken(userip);
+		return tokenService.genToken(userIp);
 	}
 
 	@GetMapping("/users")
@@ -64,11 +57,11 @@ public class JwksController {
 	}
 
 	@GetMapping("/visit")
-	public Map<String, Boolean> addVisitCount(@RequestParam String userip) {
+	public Map<String, Boolean> addVisitCount(@RequestParam String userIp) {
 		boolean flag = false;
-		Map<String, Boolean> res = new HashMap<>();
-		if (Utils.isNotEmpty(userip)) {
-			flag = userInfoService.addVisitCount(userip);
+		Map<String, Boolean> res = new HashMap<>(1);
+		if (Utils.isNotEmpty(userIp)) {
+			flag = userInfoService.addVisitCount(userIp);
 		}
 		res.put("flag", flag);
 		return res;

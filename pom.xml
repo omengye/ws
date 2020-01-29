@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	 <modelVersion>4.0.0</modelVersion>
-	
+
 	 <groupId>io.omengye</groupId>
 	 <artifactId>wscloud</artifactId>
 	 <version>0.0.1-SNAPSHOT</version>
 	 <packaging>pom</packaging>
-	
+
 	 <name>wscloud</name>
 	 <url>http://maven.apache.org</url>
 
@@ -14,13 +14,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<spring-cloud.version>Greenwich.SR3</spring-cloud.version>
+		<spring-cloud.version>Hoxton.SR1</spring-cloud.version>
 	</properties>
-	
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.9.RELEASE</version>
+		<version>2.2.2.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -34,9 +34,9 @@
 			<id>spring-milestones</id>
 			<name>Spring Milestones</name>
 			<url>http://repo.spring.io/milestone</url>
-		</repository> 
+		</repository>
 	</repositories>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -48,9 +48,9 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	
+
 	 </dependencies>
-	 
+
 	 <dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -60,9 +60,21 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>1.18.10</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.nimbusds</groupId>
+				<artifactId>nimbus-jose-jwt</artifactId>
+				<version>7.9</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
-  
+
 	<modules>
 		<module>common</module>
 		<module>gcs</module>

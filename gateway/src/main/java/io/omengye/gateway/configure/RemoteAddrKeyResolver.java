@@ -12,7 +12,7 @@ public class RemoteAddrKeyResolver implements KeyResolver {
 
     @Override
     public Mono<String> resolve(ServerWebExchange exchange) {
-    	return Mono.just(Utils.getRealIP(exchange.getRequest()));
+    	return Mono.just(Utils.getServerRealIp(exchange.getRequest()));
     }
 
 }

@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 
 public class Utils {
 
+    private Utils(){}
+
     private static final String[] CONNECT_IPS = new String[]{"CF-Connecting-IP", "HTTP_CF_CONNECTING_IP"};
 
     private static final String[] PROXY_IPS = new String[]{"X-Forwarded-For", "X-Real-IP", "Proxy-Client-IP",

@@ -47,15 +47,9 @@ public class EurekaApplicationTests {
 		@Override
 		public void run() {
 			GSearchItem item = chooseItemService.getItem();
-			try {
-				Thread.sleep(200);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 			int i = rangeRandom.rand(20);
 			if (i==1) {
-				item = chooseItemService.removeAndGetItem(item);
-
+				chooseItemService.removeAndGetItem(item);
 				chooseItemService.loopErrorItems();
 			}
 			countDownLatch.countDown();
@@ -73,18 +67,18 @@ public class EurekaApplicationTests {
 	@Test
 	public void testChoose() throws InterruptedException {
 		ExecutorService executor = Executors.newFixedThreadPool(threadNum);
-//		ExecutorService errorExecutor = Executors.newSingleThreadExecutor();
+		ExecutorService errorExecutor = Executors.newSingleThreadExecutor();
 
 
 		for (int i=0; i<threadNum; ++i) {
 			RequestRunnable requestRunnable = new RequestRunnable();
 			executor.execute(requestRunnable);
 		}
-//		Thread.sleep(10);
-//		for (int i=0; i<5; ++i) {
-//			ErrorThread errorThread = new ErrorThread();
-//			errorExecutor.execute(errorThread);
-//		}
+		Thread.sleep(10);
+		for (int i=0; i<5; ++i) {
+			ErrorThread errorThread = new ErrorThread();
+			errorExecutor.execute(errorThread);
+		}
 
 		countDownLatch.await();
 		executor.shutdown();

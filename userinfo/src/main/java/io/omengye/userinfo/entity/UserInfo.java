@@ -2,8 +2,6 @@ package io.omengye.userinfo.entity;
 
 import lombok.Data;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 @Data
 public class UserInfo {
 

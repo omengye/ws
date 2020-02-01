@@ -9,7 +9,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class SecurityConfig {
 
 	@Bean
-	SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+	SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 		http
 			.authorizeExchange()
 				.pathMatchers("/api/**").hasAuthority("SCOPE_message:read")

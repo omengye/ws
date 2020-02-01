@@ -22,12 +22,9 @@ class KeyConfig {
     @Bean
     KeyPair keyPair() {
         try {
-            String privateExponent = this.privateExponent;
-            String modulus = this.modulus;
             String exponent = "65537";
-
-            RSAPublicKeySpec publicSpec = new RSAPublicKeySpec(new BigInteger(modulus), new BigInteger(exponent));
-            RSAPrivateKeySpec privateSpec = new RSAPrivateKeySpec(new BigInteger(modulus), new BigInteger(privateExponent));
+            RSAPublicKeySpec publicSpec = new RSAPublicKeySpec(new BigInteger(this.modulus), new BigInteger(exponent));
+            RSAPrivateKeySpec privateSpec = new RSAPrivateKeySpec(new BigInteger(this.modulus), new BigInteger(this.privateExponent));
             KeyFactory factory = KeyFactory.getInstance("RSA");
             return new KeyPair(factory.generatePublic(publicSpec), factory.generatePrivate(privateSpec));
         } catch ( Exception e ) {

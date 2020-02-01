@@ -1,34 +1,31 @@
 package io.omengye.userinfo.entity;
 
-import java.io.Serializable;
-import java.util.concurrent.TimeUnit;
-
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
-import org.springframework.data.redis.core.index.Indexed;
 
-import lombok.Data;
+import java.io.Serializable;
 
 @Data
+@NoArgsConstructor
 @RedisHash("UserEntity")
 public class UserEntity implements Serializable {
-	
+
 	// userip
 	@Id
 	private String id;
 
 	private String token;
-	
+
 	private String visitTime;
 
-	private Integer vcount = 0;
-	
+	private Integer vCount = 0;
+
 	@TimeToLive
     private Long expirationTime;
-	
-	public UserEntity() {}
-	
+
 	public UserEntity(String id, String visitTime) {
 		this.id = id;
 		this.visitTime = visitTime;
@@ -39,7 +36,7 @@ public class UserEntity implements Serializable {
 	}
 
 	public UserInfo getUserInfo() {
-		return new UserInfo(visitTime, id, vcount);
+		return new UserInfo(visitTime, id, vCount);
 	}
-	
+
 }

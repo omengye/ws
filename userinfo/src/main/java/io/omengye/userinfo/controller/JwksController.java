@@ -3,6 +3,7 @@ package io.omengye.userinfo.controller;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import io.omengye.common.utils.Utils;
+import io.omengye.common.utils.constants.Constants;
 import io.omengye.userinfo.entity.TokenInfo;
 import io.omengye.userinfo.entity.UserInfo;
 import io.omengye.userinfo.service.TokenService;
@@ -63,7 +64,7 @@ public class JwksController {
 		if (Utils.isNotEmpty(userIp)) {
 			flag = userInfoService.addVisitCount(userIp);
 		}
-		res.put("flag", flag);
+		res.put(Constants.RESULT_FLAG, flag);
 		return res;
 	}
 

@@ -13,20 +13,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class UserConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserInfoService userInfoService;
+    private final UserInfoService userInfoService;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
+
+    public UserConfig(UserInfoService userInfoService, PasswordEncoder passwordEncoder) {
+        this.userInfoService = userInfoService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .mvcMatchers("/.well-known/jwks.json", "/actuator/info",
-                        "/genToken")
+                .mvcMatchers("/.well-known/jwks.json", "/token")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and().httpBasic();
@@ -34,7 +34,7 @@ public class UserConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userInfoService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userInfoService).passwordEncoder(passwordEncoder);
     }
 
 }

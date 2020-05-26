@@ -1,8 +1,6 @@
 package io.omengye.wscloud;
 
 import io.omengye.gcs.GcsApplication;
-import io.omengye.gcs.configure.GSearchItems;
-import io.omengye.gcs.entity.GCEntity;
 import io.omengye.gcs.entity.GSearchItem;
 import io.omengye.gcs.service.ChooseItemService;
 import io.omengye.gcs.service.WebClientService;
@@ -10,25 +8,16 @@ import io.omengye.gcs.utils.RangeRandom;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import reactor.core.publisher.Mono;
 
-import javax.annotation.Resource;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GcsApplication.class)
-public class EurekaApplicationTests {
+public class GcsApplicationTests {
 
 	@Autowired
 	private WebClientService webClientService;

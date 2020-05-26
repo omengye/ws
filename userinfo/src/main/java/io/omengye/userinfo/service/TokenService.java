@@ -3,8 +3,6 @@ package io.omengye.userinfo.service;
 import io.omengye.common.utils.Utils;
 import io.omengye.userinfo.entity.TokenInfo;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.provider.*;
@@ -19,19 +17,20 @@ import java.util.HashMap;
 @Service
 public class TokenService {
 
-    @Autowired
-    private UserInfoService userInfoService;
+    private final UserInfoService userInfoService;
 
-    @Autowired
-    private Environment env;
+    private final ClientDetailsService clientDetailsService;
 
-    @Autowired
-    private ClientDetailsService clientDetailsService;
+	private final AuthorizationServerTokenServices authorizationServerTokenServices;
 
-    @Autowired
-    private AuthorizationServerTokenServices authorizationServerTokenServices;
+	public TokenService(UserInfoService userInfoService, ClientDetailsService clientDetailsService,
+						AuthorizationServerTokenServices authorizationServerTokenServices) {
+		this.userInfoService = userInfoService;
+		this.clientDetailsService = clientDetailsService;
+		this.authorizationServerTokenServices = authorizationServerTokenServices;
+	}
 
-    public TokenInfo genToken(String ip) {
+	public TokenInfo genToken(String ip) {
     	TokenInfo token = new TokenInfo(null, null, null);
         if (!Utils.isNotEmpty(ip)) {
             return token;

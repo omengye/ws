@@ -11,6 +11,6 @@ import java.util.Map;
 public interface UserInfoService  {
 
     @GetMapping("/visit")
-    Map<String, Boolean> addVisitCount(@RequestParam String userIp);
+    Map<String, Boolean> addVisitCount(@RequestParam("userIp") String userIp);
 
 }

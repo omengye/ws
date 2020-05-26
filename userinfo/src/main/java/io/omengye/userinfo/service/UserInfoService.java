@@ -29,11 +29,9 @@ import java.util.Optional;
 public class UserInfoService implements UserDetailsService {
 
 
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
 	@Value("${Jwt.user.name}")
 	private String jwtUser;
@@ -41,9 +39,9 @@ public class UserInfoService implements UserDetailsService {
 	@Value("${Jwt.user.password}")
 	private String jwtPassword;
 
-	public boolean notValidUser(String user, String password) {
-		return user==null || password==null || user.length()!=jwtUser.length() || password.length()!=jwtPassword.length()
-				|| !jwtUser.equals(user) || !jwtPassword.equals(password);
+	public UserInfoService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	public List<UserInfo> getAllUser() {
@@ -88,13 +86,13 @@ public class UserInfoService implements UserDetailsService {
 	public String saveUser(String userIp, String token, Date expirationDate) {
 		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date now = new Date();
-		String visittime = sf.format(now);
-		UserEntity user = new UserEntity(userIp, visittime);
+		String visitTime = sf.format(now);
+		UserEntity user = new UserEntity(userIp, visitTime);
 		user.setToken(token);
 		Long expire = (expirationDate.getTime() - now.getTime())/1000 - Constants.EXPIRE_DELAY_TOKEN_TIME;
 		user.setExpirationTime(expire);
 		userRepository.save(user);
-		return visittime;
+		return visitTime;
 	}
 
 	public boolean addVisitCount(String userIp) {

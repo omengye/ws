@@ -6,6 +6,7 @@
         <artifactId>wscloud</artifactId>
         <groupId>io.omengye</groupId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

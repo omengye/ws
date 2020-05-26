@@ -33,60 +33,51 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class UserInfoApplicationTest {
-	
+
 	@Autowired
 	private UserInfoService userInfoService;
 
 	@Autowired
 	private TokenService tokenService;
-	
+
 //    @Value("${spring.cloud.client.ip-address}")
 //    private String clientIp;
-//    
+//
 //    @Value("${server.port}")
 //    private Integer clientPort;
-    
+
     @Autowired
     private Environment env;
-    
-//	@Bean
-//	public static PropertySourcesPlaceholderConfigurer properties() {
-//		PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
-//		YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
-//		yaml.setResources(new ClassPathResource("application.yml"));
-//		propertySourcesPlaceholderConfigurer.setProperties(yaml.getObject());
-//		return propertySourcesPlaceholderConfigurer;
-//	}
-	
+
 	//@Test
 	public void contextLoads() {
 	}
 
 	//@Test
 	public void testRedisSave()  {
-		
+
 //		try {
 //			long start = System.currentTimeMillis();
 //			userInfoService.saveUser("1", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdWJqZWN0IiwiZXhwIjoxNTQ1Mjc1OTU5LCJhdXRob3JpdGllcyI6WyJST0xFX1VTRVJTIl0sImp0aSI6IjViZDE3ZThjLThkMGMtNGUwMS05MWJlLWRkOGZkYzk0Nzk0MyIsImNsaWVudF9pZCI6InJlYWRlciIsInNjb3BlIjpbIm1lc3NhZ2U6cmVhZCJdfQ.hsIhIE56w8zB906BuNq0KAuD2skJS_XoPUkOjBkQ7C5nAgriK2GiNDnFP2lfEyLe8HVLC5reSVxjqy4gguAR33mv0qJu4QEv8xpyz3KGOZpvLFNGJyG5mC54vFoQyJPkkO6LB9igZw4UP_NIdMOrzorowpk4CccjejD4jjiUkeAE2OxmWvq6cX9sIPPayI1zpmbFbrBbdbHKG0S4KdHUGcGmXCu8dI_2vt2DfaQgsl-EWiLdsX3J-bOj3CfJ8FTnfBDPXolBowT3sGKG7Na6n0AXCP_fsISyN7xtm3wMmXHXTZOznQSiLKSPG2Vu3EMrDEqE2-Z1-ZWVGJ5iylEVBA",3L);
 //			//Thread.sleep(4*1000);
-//			
+//
 //			System.out.println(System.currentTimeMillis() - start);
 //			start = System.currentTimeMillis();
-//			
+//
 //			String token = userInfoService.getTokenByIp("1");
 //			System.out.println(token);
 //			System.out.println(System.currentTimeMillis() - start);
-//			
+//
 //			/**
-//			 * 
+//			 *
 //			 */
 //			start = System.currentTimeMillis();
 //			userInfoService.saveUser("2", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdWJqZWN0IiwiZXhwIjoxNTQ1Mjc1OTU5LCJhdXRob3JpdGllcyI6WyJST0xFX1VTRVJTIl0sImp0aSI6IjViZDE3ZThjLThkMGMtNGUwMS05MWJlLWRkOGZkYzk0Nzk0MyIsImNsaWVudF9pZCI6InJlYWRlciIsInNjb3BlIjpbIm1lc3NhZ2U6cmVhZCJdfQ.hsIhIE56w8zB906BuNq0KAuD2skJS_XoPUkOjBkQ7C5nAgriK2GiNDnFP2lfEyLe8HVLC5reSVxjqy4gguAR33mv0qJu4QEv8xpyz3KGOZpvLFNGJyG5mC54vFoQyJPkkO6LB9igZw4UP_NIdMOrzorowpk4CccjejD4jjiUkeAE2OxmWvq6cX9sIPPayI1zpmbFbrBbdbHKG0S4KdHUGcGmXCu8dI_2vt2DfaQgsl-EWiLdsX3J-bOj3CfJ8FTnfBDPXolBowT3sGKG7Na6n0AXCP_fsISyN7xtm3wMmXHXTZOznQSiLKSPG2Vu3EMrDEqE2-Z1-ZWVGJ5iylEVBA",3L);
 //			//Thread.sleep(4*1000);
-//			
+//
 //			System.out.println(System.currentTimeMillis() - start);
 //			start = System.currentTimeMillis();
-//			
+//
 //			token = userInfoService.getTokenByIp("2");
 //			System.out.println(token);
 //			System.out.println(System.currentTimeMillis() - start);

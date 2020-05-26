@@ -32,18 +32,7 @@ public class JwksController {
 		this.keyPair = keyPair;
 	}
 
-	@GetMapping("/.well-known/jwks.json")
-	public Map<String, Object> getKey(@RequestParam(required = false) String user,
-									  @RequestParam(required = false) String password) {
-		if (userInfoService.notValidUser(user, password)) {
-			return new HashMap<>(0);
-		}
-		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-		RSAKey key = new RSAKey.Builder(publicKey).build();
-		return new JWKSet(key).toJSONObject();
-	}
-
-	@GetMapping("/genToken")
+	@GetMapping("/token")
 	public TokenInfo getToken(HttpServletRequest req) {
 		String userIp = Utils.getServletRealIp(req);
 		if (!Utils.isNotEmpty(userIp)) {
@@ -52,13 +41,20 @@ public class JwksController {
 		return tokenService.genToken(userIp);
 	}
 
+	@GetMapping("/.well-known/jwks.json")
+	public Map<String, Object> getKey() {
+		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+		RSAKey key = new RSAKey.Builder(publicKey).build();
+		return new JWKSet(key).toJSONObject();
+	}
+
 	@GetMapping("/users")
 	public List<UserInfo> getAllUser() {
 		return userInfoService.getAllUser();
 	}
 
 	@GetMapping("/visit")
-	public Map<String, Boolean> addVisitCount(@RequestParam String userIp) {
+	public Map<String, Boolean> addVisitCount(@RequestParam("userIp") String userIp) {
 		boolean flag = false;
 		Map<String, Boolean> res = new HashMap<>(1);
 		if (Utils.isNotEmpty(userIp)) {

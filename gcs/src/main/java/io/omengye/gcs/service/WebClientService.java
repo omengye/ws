@@ -53,11 +53,6 @@ public class WebClientService {
                 + req.toString();
     }
 
-    private Mono<? extends Throwable> mapCommonError(final ClientResponse response) {
-        final String message = response.statusCode().getReasonPhrase();
-        return Mono.error(new ClientException(message));
-    }
-
     public <T> Mono<T> getResponse(String reqUrl, String authHeader, T obj, Class<T> clazz) {
         return getResponse(reqUrl, authHeader, obj, clazz, null);
     }
@@ -66,10 +61,10 @@ public class WebClientService {
         TcpClient tcpClient = TcpClient.create()
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2000)
             .option(ChannelOption.SO_KEEPALIVE, true)
-            .proxy(spec -> spec.type(ProxyProvider.Proxy.SOCKS5)
-                    .host("127.0.0.1")
-                    .port(1032)
-                    .nonProxyHosts("localhost,127.0.0.1,192.168.*"))
+//            .proxy(spec -> spec.type(ProxyProvider.Proxy.SOCKS5)
+//                    .host("127.0.0.1")
+//                    .port(11032)
+//                    .nonProxyHosts("localhost,127.0.0.1,192.168.*"))
             .doOnConnected(connection ->
                     connection
                             .addHandlerLast(new ReadTimeoutHandler(2))

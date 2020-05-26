@@ -3,7 +3,6 @@ package io.omengye.userinfo.configure;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -15,7 +14,6 @@ import java.io.Serializable;
 
 @Configuration
 @AutoConfigureAfter(RedisAutoConfiguration.class)
-@ComponentScan("io.omengye.userinfo")
 @EnableRedisRepositories(basePackages = "io.omengye.userinfo.repository")
 public class RedisConfig {
 

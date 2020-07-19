@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.security.KeyPair;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,18 @@ public class JwksController {
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
 		RSAKey key = new RSAKey.Builder(publicKey).build();
 		return new JWKSet(key).toJSONObject();
+	}
+
+	@GetMapping("/headers")
+	public Map<String, Object> hello(HttpServletRequest request) {
+		Map<String, Object> res = new HashMap<>(16);
+		Enumeration<String> headers = request.getHeaderNames();
+		while (headers.hasMoreElements()) {
+			String key = headers.nextElement();
+			String value = request.getHeader(key);
+			res.put(key, value);
+		}
+		return res;
 	}
 
 	@GetMapping("/users")

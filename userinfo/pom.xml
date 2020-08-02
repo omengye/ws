@@ -86,7 +86,7 @@
 					<dockerHost>${dockerHost.url}</dockerHost>
 					<images>
 						<image>
-							<name>ws/userinfo:0.0.1-SNAPSHOT</name>
+							<name>omengye/userinfo:0.0.1-SNAPSHOT</name>
 							<alias>userinfo</alias>
 							<build>
 								<dockerFile>${project.basedir}/DockerFile</dockerFile>

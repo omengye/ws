@@ -101,7 +101,7 @@
 					<dockerHost>${dockerHost.url}</dockerHost>
 					<images>
 						<image>
-							<name>ws/gcs:0.0.1-SNAPSHOT</name>
+							<name>omengye/gcs:0.0.1-SNAPSHOT</name>
 							<alias>gcs</alias>
 							<build>
 								<dockerFile>${project.basedir}/DockerFile</dockerFile>

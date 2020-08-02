@@ -73,7 +73,6 @@
 		<module>gcs</module>
     	<module>gateway</module>
     	<module>userinfo</module>
-    	<module>config</module>
     </modules>
 
 <build>

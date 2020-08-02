@@ -26,7 +26,7 @@ public class UserConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .mvcMatchers("/.well-known/jwks.json", "/token")
+                .mvcMatchers("/.well-known/jwks.json", "/token", "/actuator/**")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and().httpBasic();

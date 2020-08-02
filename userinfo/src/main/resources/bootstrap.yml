@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: ws-userinfo
+
+  cloud:
+    consul:
+      host: consul
+      port: 8500
+
+      config:
+        enabled: true
+        format: YAML
+        data-key: application
+

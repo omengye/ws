@@ -12,6 +12,7 @@ public class SecurityConfig {
 	SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 		http
 			.authorizeExchange()
+				.pathMatchers("/actuator/**").permitAll()
 				.pathMatchers("/api/**").hasAuthority("SCOPE_message:read")
 				.anyExchange().authenticated()
 				.and()

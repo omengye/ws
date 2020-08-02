@@ -2,13 +2,12 @@ package io.omengye.userinfo.service;
 
 import io.omengye.common.utils.Utils;
 import io.omengye.userinfo.common.base.Constants;
+import io.omengye.userinfo.configure.JwtProperty;
 import io.omengye.userinfo.entity.TokenInfo;
 import io.omengye.userinfo.entity.UserEntity;
 import io.omengye.userinfo.entity.UserInfo;
 import io.omengye.userinfo.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,11 +33,8 @@ public class UserInfoService implements UserDetailsService {
 
 	private final PasswordEncoder passwordEncoder;
 
-	@Value("${Jwt.user.name}")
-	private String jwtUser;
-
-	@Value("${Jwt.user.password}")
-	private String jwtPassword;
+	@Resource
+	private JwtProperty jwtProperty;
 
 	public UserInfoService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
@@ -122,8 +119,8 @@ public class UserInfoService implements UserDetailsService {
 		UserBuilder userBuilder = User.builder();
 
 		String password;
-		if (jwtUser.equals(username)) {
-			password = jwtPassword;
+		if (jwtProperty.getUser().getName().equals(username)) {
+			password = jwtProperty.getUser().getPassword();
 		}
 		else {
 			password = Utils.base64Encode(username);

@@ -12,3 +12,5 @@ spring:
         format: YAML
         data-key: application
 
+      discovery:
+        prefer-ip-address: true

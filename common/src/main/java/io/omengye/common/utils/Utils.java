@@ -73,6 +73,14 @@ public class Utils {
         return getRealIpFromHeaders(headers, xFor);
     }
 
+    private static String splitProxyIpByComma(String proxyIp) {
+        if (justNull(proxyIp) == null) {
+            return UNKNOWN_IP;
+        }
+        String[] ips = proxyIp.split(",");
+        return ips[0].trim();
+    }
+
     private static String getRealIpFromHeaders(HttpHeaders headers, String addr) {
         for (String connectIp : CONNECT_IPS) {
             if (Utils.isListNotEmpty(headers.get(connectIp))) {
@@ -82,8 +90,8 @@ public class Utils {
         String xFor = "";
         for (String proxyIp : PROXY_IPS) {
             xFor = Utils.justListNull(headers.get(proxyIp));
-            if (Utils.isNotEmpty(xFor) && !UNKNOWN_IP.equalsIgnoreCase(xFor)) {
-                return xFor;
+            if (Utils.isNotEmpty(xFor) && !UNKNOWN_IP.equalsIgnoreCase(xFor) && !UNKNOWN_IP.equals(splitProxyIpByComma(xFor))) {
+                return splitProxyIpByComma(xFor);
             }
         }
         if (!Utils.isNotEmpty(xFor) || UNKNOWN_IP.equalsIgnoreCase(xFor)) {

@@ -5,8 +5,10 @@ import io.omengye.common.utils.constants.Constants;
 import io.omengye.gcs.entity.GCEntity;
 import io.omengye.gcs.entity.GCResponseEntity;
 import io.omengye.gcs.entity.ReqEntity;
-import io.omengye.gcs.feign.UserInfoService;
+import io.omengye.gcs.feign.UserInfoFeignService;
+import io.omengye.gcs.service.ChooseItemService;
 import io.omengye.gcs.service.WebClientService;
+import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -17,18 +19,21 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import javax.validation.Valid;
 import java.util.Map;
 
 @Log4j2
 @RestController
 public class IndexController {
 
+	private final ChooseItemService chooseItemService;
+
 	private final WebClientService webClientService;
 
-	private final UserInfoService userInfoService;
+	private final UserInfoFeignService userInfoService;
 
-	public IndexController(WebClientService webClientService, UserInfoService userInfoService) {
+	public IndexController(ChooseItemService chooseItemService, WebClientService webClientService,
+						   UserInfoFeignService userInfoService) {
+		this.chooseItemService = chooseItemService;
 		this.webClientService = webClientService;
 		this.userInfoService = userInfoService;
 	}
@@ -56,7 +61,7 @@ public class IndexController {
 		String url = "https://www.google.com/complete/search?client=psy-ab&hl=zh-CN&gs_rn=64&gs_ri=psy-ab&cp=10"
 				+ "&gs_id=nv&q="+q+"&xhr=t";
 
-		return webClientService.getResponse(url, "", result, String.class);
+		return chooseItemService.getResponse(url, "", result, String.class);
 	}
 
 

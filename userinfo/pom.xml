@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>io.omengye</groupId>
 		<artifactId>wscloud</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.2</version>
 	</parent>
 
 	<artifactId>userinfo</artifactId>
@@ -28,23 +28,24 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-consul-discovery</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-consul-config</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-oauth2</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>com.nimbusds</groupId>
-			<artifactId>nimbus-jose-jwt</artifactId>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-authorization-server</artifactId>
+			<version>0.3.1</version>
 		</dependency>
 
 		<dependency>
@@ -86,7 +87,7 @@
 					<dockerHost>${dockerHost.url}</dockerHost>
 					<images>
 						<image>
-							<name>omengye/userinfo:0.0.1-SNAPSHOT</name>
+							<name>omengye/userinfo:0.0.2</name>
 							<alias>userinfo</alias>
 							<build>
 								<dockerFile>${project.basedir}/DockerFile</dockerFile>

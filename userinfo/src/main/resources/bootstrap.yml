@@ -1,17 +1,7 @@
 spring:
   application:
-    name: ws-userinfo
+    name: userinfo
 
-  cloud:
-    consul:
-      host: consul
-      port: 8500
 
-      config:
-        enabled: true
-        format: YAML
-        data-key: application
 
-      discovery:
-        prefer-ip-address: true
 

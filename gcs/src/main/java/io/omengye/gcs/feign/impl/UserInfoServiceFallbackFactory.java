@@ -1,19 +1,19 @@
 package io.omengye.gcs.feign.impl;
 
-import feign.hystrix.FallbackFactory;
-import io.omengye.gcs.feign.UserInfoService;
+import io.omengye.gcs.feign.UserInfoFeignService;
+import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
 @Component
-public class UserInfoServiceFallbackFactory implements FallbackFactory<UserInfoService> {
+public class UserInfoServiceFallbackFactory implements FallbackFactory<UserInfoFeignService> {
 
     @Resource
     private UserInfoServiceFallback userInfoServiceFallback;
 
     @Override
-    public UserInfoService create(Throwable throwable) {
+    public UserInfoFeignService create(Throwable throwable) {
         return userInfoServiceFallback;
     }
 }

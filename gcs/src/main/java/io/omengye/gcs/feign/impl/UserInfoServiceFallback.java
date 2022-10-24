@@ -1,6 +1,6 @@
 package io.omengye.gcs.feign.impl;
 
-import io.omengye.gcs.feign.UserInfoService;
+import io.omengye.gcs.feign.UserInfoFeignService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class UserInfoServiceFallback implements UserInfoService {
+public class UserInfoServiceFallback implements UserInfoFeignService {
 
     @Override
     public Map<String, Boolean> addVisitCount(String userIp) {

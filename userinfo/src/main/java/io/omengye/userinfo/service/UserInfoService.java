@@ -1,21 +1,12 @@
 package io.omengye.userinfo.service;
 
-import io.omengye.common.utils.Utils;
 import io.omengye.userinfo.common.base.Constants;
-import io.omengye.userinfo.configure.JwtProperty;
-import io.omengye.userinfo.entity.TokenInfo;
+import io.omengye.userinfo.entity.TokenInfoEntity;
 import io.omengye.userinfo.entity.UserEntity;
-import io.omengye.userinfo.entity.UserInfo;
+import io.omengye.userinfo.entity.UserInfoEntity;
 import io.omengye.userinfo.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.User.UserBuilder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -26,23 +17,13 @@ import java.util.Optional;
 
 @Log4j2
 @Service
-public class UserInfoService implements UserDetailsService {
-
-
-	private final UserRepository userRepository;
-
-	private final PasswordEncoder passwordEncoder;
+public class UserInfoService {
 
 	@Resource
-	private JwtProperty jwtProperty;
+	private UserRepository userRepository;
 
-	public UserInfoService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-		this.userRepository = userRepository;
-		this.passwordEncoder = passwordEncoder;
-	}
-
-	public List<UserInfo> getAllUser() {
-		List<UserInfo> list = new ArrayList<>();
+	public List<UserInfoEntity> getAllUser() {
+		List<UserInfoEntity> list = new ArrayList<>();
 		userRepository.findAll().forEach(i->{
 			if (i != null) {
 				list.add(i.getUserInfo());
@@ -72,7 +53,7 @@ public class UserInfoService implements UserDetailsService {
 		return user.getToken();
 	}
 
-	public TokenInfo getTokenInfoByIp(String userIp) {
+	public TokenInfoEntity getTokenInfoByIp(String userIp) {
 		UserEntity user = getUserByIp(userIp);
 		if(user==null) {
 			return null;
@@ -110,32 +91,6 @@ public class UserInfoService implements UserDetailsService {
 		}
 		userRepository.save(user);
 		return true;
-	}
-
-	// username -> ip
-	@Override
-	public UserDetails loadUserByUsername(String username) {
-		String roles = "USERS";
-		UserBuilder userBuilder = User.builder();
-
-		String password;
-		if (jwtProperty.getUser().getName().equals(username)) {
-			password = jwtProperty.getUser().getPassword();
-		}
-		else {
-			password = Utils.base64Encode(username);
-		}
-
-		if (StringUtils.isEmpty(password)) {
-			throw new UsernameNotFoundException("unrecognised username");
-		}
-
-		return userBuilder
-				.passwordEncoder(passwordEncoder::encode)
-				.username(username)
-				.password(password)
-				.roles(roles)
-				.build();
 	}
 
 }

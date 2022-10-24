@@ -1,4 +1,23 @@
-spring:
-  profiles:
-    active: dev
+server:
+  port: 9002
 
+spring:
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          jwk-set-uri: http://userinfo:9003/.well-known/jwks.json
+
+userinfo:
+  user:
+    url: http://userinfo:9003
+
+# google search
+google:
+  search[0]:
+    key: key
+    cx: value
+
+logging:
+  level:
+    org.springframework.security: debug

@@ -13,7 +13,6 @@ import java.io.Serializable;
 @RedisHash("UserEntity")
 public class UserEntity implements Serializable {
 
-	// userip
 	@Id
 	private String id;
 
@@ -31,12 +30,12 @@ public class UserEntity implements Serializable {
 		this.visitTime = visitTime;
 	}
 
-	public TokenInfo getTokenInfo() {
-		return new TokenInfo(token, visitTime, id);
+	public TokenInfoEntity getTokenInfo() {
+		return new TokenInfoEntity(token, visitTime, id);
 	}
 
-	public UserInfo getUserInfo() {
-		return new UserInfo(visitTime, id, vCount);
+	public UserInfoEntity getUserInfo() {
+		return new UserInfoEntity(visitTime, id, vCount);
 	}
 
 }

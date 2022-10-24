@@ -1,16 +1,4 @@
 spring:
   application:
-    name: ws-gcs
-  cloud:
-    consul:
-      enabled: true
-      host: consul
-      port: 8500
+    name: gcs
 
-      config:
-        enabled: true
-        format: YAML
-        data-key: application
-
-      discovery:
-        prefer-ip-address: true

@@ -8,11 +8,9 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 
-@EnableDiscoveryClient
 @SpringBootApplication
 @EnableScheduling
 @EnableFeignClients
-@EnableCircuitBreaker
 public class GcsApplication {
 
 	public static void main(String[] args) {

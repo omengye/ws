@@ -1,6 +1,6 @@
 package io.omengye.gcs.exception;
 
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
@@ -20,7 +20,7 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
 
     public GlobalExceptionHandler(GlobalErrorAttributes g, ApplicationContext applicationContext,
                                           ServerCodecConfigurer serverCodecConfigurer) {
-        super(g, new ResourceProperties(), applicationContext);
+        super(g, new WebProperties.Resources(), applicationContext);
         super.setMessageWriters(serverCodecConfigurer.getWriters());
         super.setMessageReaders(serverCodecConfigurer.getReaders());
     }

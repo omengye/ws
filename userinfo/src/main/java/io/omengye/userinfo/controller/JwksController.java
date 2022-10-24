@@ -1,11 +1,13 @@
 package io.omengye.userinfo.controller;
 
+import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 import io.omengye.common.utils.Utils;
 import io.omengye.common.utils.constants.Constants;
-import io.omengye.userinfo.entity.TokenInfo;
-import io.omengye.userinfo.entity.UserInfo;
+import io.omengye.userinfo.entity.TokenInfoEntity;
+import io.omengye.userinfo.entity.UserInfoEntity;
 import io.omengye.userinfo.service.TokenService;
 import io.omengye.userinfo.service.UserInfoService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.KeyPair;
+import java.security.PrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -23,9 +26,9 @@ import java.util.Map;
 @RestController
 public class JwksController {
 
-	private TokenService tokenService;
-	private UserInfoService userInfoService;
-	private KeyPair keyPair;
+	private final TokenService tokenService;
+	private final UserInfoService userInfoService;
+	private final KeyPair keyPair;
 
 	public JwksController(TokenService tokenService, UserInfoService userInfoService, KeyPair keyPair) {
 		this.tokenService = tokenService;
@@ -34,10 +37,10 @@ public class JwksController {
 	}
 
 	@GetMapping("/token")
-	public TokenInfo getToken(HttpServletRequest req) {
+	public TokenInfoEntity getToken(HttpServletRequest req) {
 		String userIp = Utils.getServletRealIp(req);
 		if (!Utils.isNotEmpty(userIp)) {
-			return new TokenInfo(null, null, null);
+			return new TokenInfoEntity(null, null, null);
 		}
 		return tokenService.genToken(userIp);
 	}
@@ -45,7 +48,13 @@ public class JwksController {
 	@GetMapping("/.well-known/jwks.json")
 	public Map<String, Object> getKey() {
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-		RSAKey key = new RSAKey.Builder(publicKey).build();
+		PrivateKey privateKey = keyPair.getPrivate();
+		RSAKey key = new RSAKey
+				.Builder(publicKey)
+				.algorithm(JWSAlgorithm.RS256)
+				.privateKey(privateKey)
+				.keyUse(KeyUse.SIGNATURE)
+				.build();
 		return new JWKSet(key).toJSONObject();
 	}
 
@@ -61,8 +70,8 @@ public class JwksController {
 		return res;
 	}
 
-	@GetMapping("/users")
-	public List<UserInfo> getAllUser() {
+	@GetMapping("/user/ips")
+	public List<UserInfoEntity> getAllUser() {
 		return userInfoService.getAllUser();
 	}
 

@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -109,5 +110,4 @@ public class Utils {
         }
         return q;
     }
-
 }

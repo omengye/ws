@@ -1,16 +1,3 @@
 spring:
   application:
-    name: ws-gateway
-  cloud:
-    consul:
-      enabled: true
-      host: consul
-      port: 8500
-
-      config:
-        enabled: true
-        format: YAML
-        data-key: application
-
-      discovery:
-        prefer-ip-address: true
+    name: gateway

@@ -1,3 +1,42 @@
+server:
+  port: 9000
+
 spring:
-  profiles:
-    active: dev
+  redis:
+    host: redis
+    port: 6379
+
+  cloud:
+    gateway:
+      routes:
+        - id: ws-gcs
+          uri: http://gcs:9002
+          predicates:
+            - Path=/api/gcs/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1  # 令牌桶的容积
+                redis-rate-limiter.burstCapacity: 10  # 流速 每秒
+                key-resolver: "#{@remoteAddrKeyResolver}" #SPEL表达式去的对应的bean
+            - StripPrefix=2
+
+        - id: ws-deny
+          uri: no://op
+          predicates:
+            - Path=/api/user/.well-known/jwks.json,/api/user/visit
+          filters:
+            - SetStatus=401
+
+        - id: ws-userinfo
+          uri: http://userinfo:9003
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1  # 令牌桶的容积
+                redis-rate-limiter.burstCapacity: 10  # 流速 每秒
+                key-resolver: "#{@remoteAddrKeyResolver}" #SPEL表达式去的对应的bean
+            - StripPrefix=2
+

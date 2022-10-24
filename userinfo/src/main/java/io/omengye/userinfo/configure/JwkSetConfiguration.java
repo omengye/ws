@@ -1,75 +1,119 @@
 package io.omengye.userinfo.configure;
 
-import io.omengye.userinfo.common.base.Constants;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
+import io.omengye.userinfo.entity.JWKSetEntity;
+import io.omengye.userinfo.repository.JWKSetRepository;
+import io.omengye.userinfo.service.RedisOAuth2AuthorizationService;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
 
-import java.security.KeyPair;
+import javax.annotation.Resource;
+import java.security.*;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 
-@EnableAuthorizationServer
 @Configuration
-public class JwkSetConfiguration extends AuthorizationServerConfigurerAdapter {
+@Slf4j
+public class JwkSetConfiguration {
 
-	AuthenticationManager authenticationManager;
-	KeyPair keyPair;
+	@Resource
+	private JWKSetRepository jwkSetRepository;
 
-	public JwkSetConfiguration(
-			AuthenticationConfiguration authenticationConfiguration,
-			KeyPair keyPair) throws Exception {
+	private static final String RSA_JWK_SET = "RSA_JWK_SET";
 
-		this.authenticationManager = authenticationConfiguration.getAuthenticationManager();
-		this.keyPair = keyPair;
+//	@Bean
+//	public InMemoryOAuth2AuthorizationService oAuth2AuthorizationService() {
+//		return new InMemoryOAuth2AuthorizationService();
+//	}
+
+	@SneakyThrows
+	private RSAKey loadKey(JWKSetEntity jwkSetEntity) {
+		String privateKeyStr = jwkSetEntity.getPrivateKey();
+		String publicKeyStr = jwkSetEntity.getPublicKey();
+
+		KeyFactory kf = KeyFactory.getInstance("RSA");
+
+		byte[] privateKeyDecode = Base64.getDecoder().decode(privateKeyStr);
+		byte[] publicKeyDecode = Base64.getDecoder().decode(publicKeyStr);
+		PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyDecode);
+		PrivateKey privateKey = kf.generatePrivate(privateKeySpec);
+
+		X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyDecode);
+		RSAPublicKey publicKey = (RSAPublicKey) kf.generatePublic(publicKeySpec);
+
+		return new RSAKey.Builder(publicKey)
+				.privateKey(privateKey)
+				.build();
 	}
 
-	@Override
-	public void configure(ClientDetailsServiceConfigurer clients)
-			throws Exception {
-		clients.inMemory()
-				.withClient("reader")
-				.authorizedGrantTypes("password")
-				.secret("{noop}secret")
-				.scopes("message:read")
-				.accessTokenValiditySeconds(Constants.EXPIRE_TOKEN_TIME)
-				.and()
-				.withClient("writer")
-				.authorizedGrantTypes("password")
-				.secret("{noop}secret")
-				.scopes("message:write")
-				.accessTokenValiditySeconds(Constants.EXPIRE_TOKEN_TIME);
-	}
 
-	@Override
-	public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
-		endpoints
-				.authenticationManager(this.authenticationManager)
-				.accessTokenConverter(accessTokenConverter())
-				.tokenStore(tokenStore());
+	@Bean
+	public JWKSource<SecurityContext> jwkSource() throws JOSEException {
+		KeyPair keyPair = generateRsaKey();
+		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+		RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+
+		RSAKey rsaKey = new RSAKey.Builder(publicKey)
+				.privateKey(privateKey)
+				.build();
+		JWKSet jwkSet = new JWKSet(rsaKey);
+
+		String privateKeySTr = Base64.getEncoder().encodeToString(privateKey.getEncoded());
+		String publicKeySTr = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+
+		jwkSetRepository.save(JWKSetEntity.builder()
+						.id(RSA_JWK_SET)
+						.privateKey(privateKeySTr)
+						.publicKey(publicKeySTr)
+						.build());
+		return new ImmutableJWKSet<>(jwkSet);
 	}
 
 	@Bean
-	public TokenStore tokenStore() {
-		return new JwtTokenStore(accessTokenConverter());
+	public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
+		return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
 	}
 
 	@Bean
-	public JwtAccessTokenConverter accessTokenConverter() {
-		JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-		converter.setKeyPair(this.keyPair);
+	public JwtEncoder jwtEncoder(JWKSource<SecurityContext> jwkSource) {
+		return new NimbusJwtEncoder(jwkSource);
+	}
 
-		DefaultAccessTokenConverter accessTokenConverter = new DefaultAccessTokenConverter();
-		accessTokenConverter.setUserTokenConverter(new SubjectAttributeUserTokenConverter());
-		converter.setAccessTokenConverter(accessTokenConverter);
+	@Bean
+	public KeyPair generateRsaKey() throws JOSEException {
+		JWKSetEntity jwkSetEntity = jwkSetRepository.findById(RSA_JWK_SET).orElse(null);
+		if (jwkSetEntity != null) {
+			return loadKey(jwkSetEntity).toKeyPair();
+		}
+		KeyPair keyPair;
+		try {
+			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+			keyPairGenerator.initialize(2048);
+			keyPair = keyPairGenerator.generateKeyPair();
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
+		return keyPair;
+	}
 
-		return converter;
+	@Bean
+	public ProviderSettings providerSettings() {
+		return ProviderSettings.builder().build();
 	}
 }

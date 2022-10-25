@@ -1,4 +1,5 @@
 FROM openjdk:11-jdk-slim
 VOLUME /tmp
-ADD target/gcs-0.0.2.jar gcs.jar
-CMD ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/gcs.jar"]
+ADD target/gcs-0.0.2.jar /app/gcs.jar
+WORKDIR /app
+CMD ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app/gcs.jar"]

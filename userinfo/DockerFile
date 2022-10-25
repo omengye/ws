@@ -1,4 +1,5 @@
 FROM openjdk:11-jdk-slim
 VOLUME /tmp
-ADD target/userinfo-0.0.2.jar userinfo.jar
-CMD ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/userinfo.jar"]
+ADD target/userinfo-0.0.2.jar /app/userinfo.jar
+WORKDIR /app
+CMD ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app/userinfo.jar"]

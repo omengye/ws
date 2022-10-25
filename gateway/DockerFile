@@ -1,4 +1,5 @@
 FROM openjdk:11-jdk-slim
 VOLUME /tmp
-ADD target/gateway-0.0.2.jar gateway.jar
-CMD ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/gateway.jar"]
+ADD target/gateway-0.0.2.jar /app/gateway.jar
+WORKDIR /app
+CMD ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app/gateway.jar"]

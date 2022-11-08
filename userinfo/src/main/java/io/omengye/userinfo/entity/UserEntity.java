@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
-@RedisHash("UserEntity")
+@RedisHash(value="UserEntity")
 public class UserEntity implements Serializable {
 
 	@Id

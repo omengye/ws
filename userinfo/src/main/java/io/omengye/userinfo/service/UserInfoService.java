@@ -1,11 +1,13 @@
 package io.omengye.userinfo.service;
 
+import io.omengye.common.utils.Utils;
 import io.omengye.userinfo.common.base.Constants;
 import io.omengye.userinfo.entity.TokenInfoEntity;
 import io.omengye.userinfo.entity.UserEntity;
 import io.omengye.userinfo.entity.UserInfoEntity;
 import io.omengye.userinfo.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -35,10 +37,11 @@ public class UserInfoService {
 	}
 
 	public UserEntity getUserByIp(String userIp) {
-		if (!userRepository.existsById(userIp)) {
+		String hashIp = Utils.base64Encode(userIp);
+		if (Strings.isEmpty(hashIp) || !userRepository.existsById(hashIp)) {
 			return null;
 		}
-		Optional<UserEntity> userEntity = userRepository.findById(userIp);
+		Optional<UserEntity> userEntity = userRepository.findById(hashIp);
 		if (Optional.empty().equals(userEntity)) {
 			return null;
 		}
@@ -65,7 +68,7 @@ public class UserInfoService {
 		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date now = new Date();
 		String visitTime = sf.format(now);
-		UserEntity user = new UserEntity(userIp, visitTime);
+		UserEntity user = new UserEntity(Utils.base64Encode(userIp), visitTime);
 		user.setToken(token);
 		Long expire = (expirationDate.getTime() - now.getTime())/1000 - Constants.EXPIRE_DELAY_TOKEN_TIME;
 		user.setExpirationTime(expire);

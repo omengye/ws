@@ -1,5 +1,6 @@
 package io.omengye.userinfo.entity;
 
+import io.omengye.userinfo.common.base.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -8,7 +9,7 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 
 @Data
 @AllArgsConstructor
-@RedisHash("ClientIdRegisteredClientEntity")
+@RedisHash(value="ClientIdRegisteredClientEntity", timeToLive = Constants.EXPIRE_TOKEN_TIME)
 public class ClientIdRegisteredClientEntity {
 
     @Id

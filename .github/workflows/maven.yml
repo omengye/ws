@@ -13,5 +13,15 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ docker.DOCKERHUB_USERNAME }}
+        password: ${{ docker.DOCKERHUB_PASSWORD }}    
     - name: Build with Maven
-      run: mvn package --file pom.xml -Dmaven.test.skip=true io.fabric8:docker-maven-plugin:0.33.0:build
+      run: mvn package --file pom.xml -Dmaven.test.skip=true
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+    - name: Push to DockerHub
+      run: mvn fabric8:build fabric8:push
+    

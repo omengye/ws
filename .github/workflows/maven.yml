@@ -23,5 +23,5 @@ jobs:
     - name: Push changes
       uses: ad-m/github-push-action@master
     - name: Push to DockerHub
-      run: mvn fabric8:build fabric8:push
+      run: mvn -DskipTests=true io.fabric8:docker-maven-plugin:0.33.0:build io.fabric8:docker-maven-plugin:0.33.0:push
     
